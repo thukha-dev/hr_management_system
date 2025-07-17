@@ -1,0 +1,58 @@
+/my-next-app
+├── app/                            # App Router-based pages
+│   ├── (auth)/                     # Optional route group
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   └── register/
+│   │       └── page.tsx
+│   ├── dashboard/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx                  # Root layout
+│   ├── page.tsx                    # Homepage
+│   ├── globals.css
+│   └── favicon.ico
+│
+├── components/                     # Reusable UI components
+│   ├── ui/                         # Design system (Button, Input, etc.)
+│   ├── layout/                     # Navbar, Footer, Sidebar, etc.
+│   ├── forms/                      # Form components
+│   └── shared/                     # Shared logic widgets (e.g., Avatar, Toast)
+│
+├── actions/                        # Server actions (Next.js App Router)
+│   ├── auth.ts
+│   ├── user.ts
+│   └── post.ts
+│
+├── lib/                            # Utilities and shared logic
+│   ├── db.ts                       # DB connection (e.g., Prisma or Mongo)
+│   ├── auth.ts                     # Auth helpers (e.g., session check)
+│   ├── validation.ts               # Zod/Yup schemas
+│   └── constants.ts                # Static constants (roles, paths, etc.)
+│
+├── types/                          # Centralized TypeScript types/interfaces
+│   ├── index.ts                    # Export all types (optional)
+│   ├── user.ts                     # User-related types
+│   ├── auth.ts                     # Auth form types
+│   ├── api.ts                      # API response/request types
+│   ├── post.ts                     # Blog/Post-related types
+│   └── props.ts                    # Component props types
+│
+├── utils/                          # Utility functions (formatters, etc.)
+│   ├── formatDate.ts
+│   ├── slugify.ts
+│   └── isEmail.ts
+│
+├── public/                         # Public static assets
+│   ├── images/
+│   └── logo.svg
+│
+├── styles/                         # Tailwind/global styles
+│   └── tailwind.css
+│
+├── middleware.ts                   # Next.js middleware
+├── .env                            # Environment variables
+├── next.config.js                  # Next.js config
+├── tailwind.config.ts              # Tailwind config
+├── tsconfig.json                   # TypeScript config
+└── README.md

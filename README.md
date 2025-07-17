@@ -20,6 +20,39 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Internationalization (i18n)
+
+This project uses `next-intl` for internationalization with support for English (en) and Myanmar (my) languages.
+
+### Adding a New Language
+
+1. Add the new language code to the `locales` array in `src/i18n.ts`
+2. Create a new JSON file in `src/messages/` with the language code (e.g., `es.json` for Spanish)
+3. Add translations for all keys in the new language file
+4. Update the `LanguageLabels` and `FlagIcons` objects in `src/components/header.tsx`
+
+### Using Translations in Components
+
+```tsx
+import { useTranslations } from 'next-intl';
+
+function MyComponent() {
+  const t = useTranslations('namespace');
+  
+  return (
+    <div>
+      <h1>{t('welcome')}</h1>
+      <p>{t('description')}</p>
+    </div>
+  );
+}
+```
+
+### Adding New Translation Keys
+
+1. Add the new key to all language files in `src/messages/`
+2. Use the key in your components with the `useTranslations` hook
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

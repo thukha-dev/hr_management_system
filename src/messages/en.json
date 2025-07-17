@@ -1,0 +1,50 @@
+{
+  "header": {
+    "title": "HR Management System"
+  },
+  "language": {
+    "en": "English",
+    "my": "မြန်မာ",
+    "change": "Change language"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "subtitle": "Enter your email and password to login to your account",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "orContinueWith": "Or continue with",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "errors": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "invalidCredentials": "Invalid email or password",
+      "unknownError": "An error occurred. Please try again."
+    },
+    "success": "Login successful!"
+  },
+  "home": {
+    "welcome": "Welcome to HR Management System",
+    "features": {
+      "title": "Key Features",
+      "multilingual": "Full support for English and Myanmar languages",
+      "userFriendly": "Intuitive and easy-to-use interface",
+      "efficient": "Streamlined HR processes and workflows"
+    },
+    "about": {
+      "title": "About Our System",
+      "description": "A comprehensive HR management solution designed to streamline your HR operations and improve efficiency.",
+      "learnMore": "Learn More"
+    },
+    "currentLanguage": "You are currently viewing in English",
+    "languageNote": "Use the language switcher in the header to change the language."
+  }
+}
