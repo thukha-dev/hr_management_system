@@ -5,10 +5,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { FormState, initialFormState } from "@/types/auth";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 // Mock auth functions - replace with your actual auth implementation
 const signIn = async (provider: string) => {
@@ -16,19 +22,23 @@ const signIn = async (provider: string) => {
   // Implement actual sign-in logic here
 };
 
-const authenticate = async (email: string, password: string, remember: boolean): Promise<{ success: boolean; message: string }> => {
+const authenticate = async (
+  email: string,
+  password: string,
+  remember: boolean
+): Promise<{ success: boolean; message: string }> => {
   // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   if (email && password) {
     return {
       success: true,
-      message: 'login.success',
+      message: "login.success",
     };
   } else {
     return {
       success: false,
-      message: 'login.errors.invalidCredentials',
+      message: "login.errors.invalidCredentials",
     };
   }
 };
@@ -46,16 +56,16 @@ const createLoginAction = (t: any) => {
 
     // Email validation
     if (!email) {
-      errors.email = [t('login.errors.emailRequired')];
+      errors.email = [t("login.errors.emailRequired")];
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = [t('login.errors.invalidEmail')];
+      errors.email = [t("login.errors.invalidEmail")];
     }
 
     // Password validation
     if (!password) {
-      errors.password = [t('login.errors.passwordRequired')];
+      errors.password = [t("login.errors.passwordRequired")];
     } else if (password.length < 6) {
-      errors.password = [t('login.errors.passwordMinLength')];
+      errors.password = [t("login.errors.passwordMinLength")];
     }
 
     if (Object.keys(errors).length > 0) {
@@ -68,18 +78,18 @@ const createLoginAction = (t: any) => {
 
     try {
       const result = await authenticate(email, password, remember);
-      
+
       if (result.success) {
         return {
           ...initialFormState,
-          message: t('login.success'),
+          message: t("login.success"),
           values: { email, password, remember },
         };
       } else {
         return {
           ...initialFormState,
-          errors: { _form: [t('login.errors.invalidCredentials')] },
-          values: { email, password: '', remember },
+          errors: { _form: [t("login.errors.invalidCredentials")] },
+          values: { email, password: "", remember },
         };
       }
     } catch (error) {
@@ -89,10 +99,10 @@ const createLoginAction = (t: any) => {
           _form: [
             error instanceof Error
               ? error.message
-              : t('login.errors.unknownError'),
+              : t("login.errors.unknownError"),
           ],
         },
-        values: { email, password: '', remember },
+        values: { email, password: "", remember },
       };
     }
   };
@@ -100,18 +110,16 @@ const createLoginAction = (t: any) => {
 
 export default function LoginPage() {
   const t = useTranslations();
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('Login page rendered');
-  }, [t]);
   const router = useRouter();
-  const [state, formAction] = useActionState(createLoginAction(t), initialFormState);
+  const [state, formAction] = useActionState(
+    createLoginAction(t),
+    initialFormState
+  );
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state.message === t('login.success')) {
+    if (state.message === t("login.success")) {
       router.push("/dashboard");
     }
   }, [state, router, t]);
@@ -120,7 +128,7 @@ export default function LoginPage() {
     setIsLoading(
       !!state.message &&
         state.message !== "" &&
-        state.message !== t('login.success')
+        state.message !== t("login.success")
     );
   }, [state]);
 
@@ -129,19 +137,21 @@ export default function LoginPage() {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">
           <span className="text-blue-600 dark:text-blue-400">MOT</span>
-          <span className="text-slate-800 dark:text-slate-100 ml-2">HR Management System</span>
+          <span className="text-slate-800 dark:text-slate-100 ml-2">
+            HR Management System
+          </span>
         </h1>
         <p className="text-slate-600 dark:text-slate-400 text-lg">
-          {t('login.subtitle')}
+          {t("login.subtitle")}
         </p>
       </div>
       <Card className="w-full max-w-md bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden transition-colors duration-300">
         <CardHeader className="space-y-1 p-6 pb-2">
           <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-            {t('login.title')}
+            {t("login.title")}
           </CardTitle>
           <CardDescription className="text-slate-600 dark:text-slate-400">
-            {t('login.subtitle')}
+            {t("login.subtitle")}
           </CardDescription>
         </CardHeader>
 
@@ -166,45 +176,63 @@ export default function LoginPage() {
 
           <form ref={formRef} action={formAction} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {t('login.email')}
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
+                {t("login.email")}
               </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder={t('login.emailPlaceholder')}
+                placeholder={t("login.emailPlaceholder")}
                 required
                 defaultValue={state.values?.email}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${state.errors?.email ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'}`}
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${
+                  state.errors?.email
+                    ? "border-red-500"
+                    : "border-slate-300 dark:border-slate-600"
+                }`}
               />
               {state.errors?.email && (
-                <p className="mt-1 text-sm text-red-500">{state.errors.email[0]}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {state.errors.email[0]}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {t('login.password')}
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                >
+                  {t("login.password")}
                 </Label>
                 <Link
                   href="/forgot-password"
                   className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  {t('login.forgotPassword')}
+                  {t("login.forgotPassword")}
                 </Link>
               </div>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder={t('login.passwordPlaceholder')}
+                placeholder={t("login.passwordPlaceholder")}
                 required
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${state.errors?.password ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'}`}
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${
+                  state.errors?.password
+                    ? "border-red-500"
+                    : "border-slate-300 dark:border-slate-600"
+                }`}
               />
               {state.errors?.password && (
-                <p className="mt-1 text-sm text-red-500">{state.errors.password[0]}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {state.errors.password[0]}
+                </p>
               )}
             </div>
             <div className="flex items-center space-x-2">
@@ -215,8 +243,11 @@ export default function LoginPage() {
                 className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800"
                 defaultChecked={state.values?.remember}
               />
-              <Label htmlFor="remember" className="text-sm text-slate-700 dark:text-slate-300">
-                {t('login.rememberMe')}
+              <Label
+                htmlFor="remember"
+                className="text-sm text-slate-700 dark:text-slate-300"
+              >
+                {t("login.rememberMe")}
               </Label>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
@@ -242,10 +273,10 @@ export default function LoginPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  {t('login.signingIn')}
+                  {t("login.signingIn")}
                 </>
               ) : (
-                t('login.signIn')
+                t("login.signIn")
               )}
             </Button>
           </form>
@@ -256,7 +287,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-white px-2 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                {t('login.orContinueWith')}
+                {t("login.orContinueWith")}
               </span>
             </div>
           </div>
@@ -299,9 +330,12 @@ export default function LoginPage() {
             </Button> */}
           </div>
           <div className="mt-4 text-center text-sm">
-            {t('login.noAccount')}{' '}
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-              {t('login.signUp')}
+            {t("login.noAccount")}{" "}
+            <Link
+              href="/register"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              {t("login.signUp")}
             </Link>
           </div>
         </CardContent>

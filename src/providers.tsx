@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { NextIntlClientProvider, AbstractIntlMessages } from 'next-intl';
-import { ReactNode } from 'react';
+import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
+import { ReactNode } from "react";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -12,18 +12,18 @@ interface ProvidersProps {
 
 export function Providers({ children, locale, messages }: ProvidersProps) {
   return (
-    <NextIntlClientProvider 
+    <NextIntlClientProvider
       locale={locale}
       messages={messages}
       timeZone="Asia/Yangon"
       formats={{
         dateTime: {
           short: {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          }
-        }
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          },
+        },
       }}
     >
       <ThemeProvider
@@ -31,6 +31,8 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
+        storageKey="theme"
+        enableColorScheme
       >
         {children}
       </ThemeProvider>

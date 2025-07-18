@@ -1,10 +1,10 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { ThemeToggle } from "./theme-toggle";
-import { usePathname, useRouter } from 'next/navigation';
-import { locales } from '@/i18n';
-import { useEffect } from 'react';
+import { usePathname, useRouter } from "next/navigation";
+import { locales } from "@/i18n";
+import { useEffect } from "react";
 
 export function Header() {
   const t = useTranslations();
@@ -12,17 +12,18 @@ export function Header() {
   const router = useRouter();
 
   // Extract the current locale from the pathname
-  const segments = pathname.split('/');
-  const currentLocale = segments[1] && locales.includes(segments[1] as any) ? segments[1] : 'en';
+  const segments = pathname.split("/");
+  const currentLocale =
+    segments[1] && locales.includes(segments[1] as any) ? segments[1] : "en";
 
   // Debug logging
   useEffect(() => {
-    console.log('Current locale:', currentLocale);
-    console.log('Available locales:', locales);
+    console.log("Current locale:", currentLocale);
+    console.log("Available locales:", locales);
   }, [currentLocale, t]);
 
   const switchLanguage = (newLocale: string) => {
-    console.log('Switching to locale:', newLocale);
+    console.log("Switching to locale:", newLocale);
     // Update the URL with the new locale
     const newSegments = [...segments];
     if (locales.includes(segments[1] as any)) {
@@ -30,8 +31,8 @@ export function Header() {
     } else {
       newSegments.splice(1, 0, newLocale);
     }
-    const newPath = newSegments.join('/');
-    console.log('Navigating to:', newPath);
+    const newPath = newSegments.join("/");
+    console.log("Navigating to:", newPath);
     router.push(newPath);
   };
 
@@ -41,7 +42,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center space-x-4">
             <span className="text-lg font-semibold tracking-tight">
-              {t('header.title')}
+              {t("header.title")}
             </span>
           </div>
           <div className="flex items-center space-x-4">
@@ -52,8 +53,8 @@ export function Header() {
                   onClick={() => switchLanguage(locale)}
                   className={`px-2 py-1 rounded ${
                     currentLocale === locale
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-accent hover:text-accent-foreground'
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground"
                   }`}
                 >
                   {t(`language.${locale}`)}
