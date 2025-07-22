@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/thukha/MOT Projects/hr_management_system/logs/.392adbedbb9910209455e755a30020245b642d8e-audit.json",
+    "files": [
+        {
+            "date": 1753071967840,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/log-2025-07-21.log",
+            "hash": "51aa06c3118064c351df67d0090d9ece7c88e6c11eed1aedd3aa69da5f1b8e44"
+        },
+        {
+            "date": 1753152103929,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/log-2025-07-22.log",
+            "hash": "a0e9c7e208524e4eead48842030c83b366afd0e9d42700e8d03027ad1171c38c"
+        }
+    ],
+    "hashType": "sha256"
+}

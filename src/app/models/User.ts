@@ -1,15 +1,9 @@
-import "reflect-metadata";
-import {
-  prop as Property,
-  getModelForClass,
-  modelOptions,
-  DocumentType,
-} from "@typegoose/typegoose";
+import { prop as Property, getModelForClass, modelOptions, DocumentType } from "@typegoose/typegoose";
 import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 import * as bcrypt from "bcryptjs";
-import { Document } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-type UserDocument = DocumentType<User> & Document;
+export type UserDocument = DocumentType<User> & Document;
 
 export enum UserRole {
   Employee = "Employee",
@@ -20,21 +14,46 @@ export enum UserRole {
   SuperAdmin = "Super Admin",
 }
 
-@modelOptions({ schemaOptions: { timestamps: true } })
+@modelOptions({ 
+  schemaOptions: { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  } 
+})
 export class User extends TimeStamps {
-  @Property({ required: true })
+  @Property({ 
+    type: () => String, 
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Please enter a valid email']
+  })
   public email!: string;
 
-  @Property({ required: true })
+  @Property({ 
+    type: () => String, 
+    required: [true, 'Name is required'],
+    trim: true,
+    minlength: [2, 'Name must be at least 2 characters long'],
+    maxlength: [50, 'Name cannot exceed 50 characters']
+  })
   public name!: string;
 
-  @Property({ required: true, select: false })
+  @Property({ 
+    type: () => String, 
+    required: [true, 'Password is required'],
+    minlength: [8, 'Password must be at least 8 characters long'],
+    select: false
+  })
   public password!: string;
 
   @Property({
-    enum: UserRole,
+    type: () => String,
+    enum: Object.values(UserRole),
     default: UserRole.Employee,
-    type: String,
+    required: [true, 'User role is required']
   })
   public role!: UserRole;
 

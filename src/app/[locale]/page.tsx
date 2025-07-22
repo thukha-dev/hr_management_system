@@ -1,23 +1,22 @@
 // src/app/[locale]/page.tsx
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { locales, defaultLocale } from "@/i18n";
+import { locales, defaultLocale, type Locale } from "@/i18n";
 
 type Props = {
   params: {
-    locale: string;
+    locale: Locale;
   };
 };
+// ? params ကို await လုပ်ပေးရတယ်...အာ့မှ error မတက်မှာပါ
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
 
-// This component handles the async logic
-async function HomeContent({ params }: { params: { locale: string } }) {
-  const locale = await params?.locale || defaultLocale;
-  
-  if (!locales.includes(locale as any)) {
+  if (!locales.includes(locale)) {
     redirect(`/${defaultLocale}`);
   }
 
-  const t = useTranslations("home");
+  const t = await getTranslations({ locale, namespace: "home" });
 
   return (
     <div className="container mx-auto p-6">
@@ -38,12 +37,5 @@ async function HomeContent({ params }: { params: { locale: string } }) {
         </div>
       </div>
     </div>
-  );
-}
-
-// This is the main page component - keep it synchronous
-export default function Home({ params }: Props) {
-  return (
-    <HomeContent params={params} />
   );
 }

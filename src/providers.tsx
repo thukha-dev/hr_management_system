@@ -3,6 +3,7 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { ReactNode } from "react";
+import { Toaster } from "sonner";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -12,22 +13,24 @@ interface ProvidersProps {
 
 export function Providers({ children, locale, messages }: ProvidersProps) {
   return (
-    <NextIntlClientProvider
-      locale={locale}
-      messages={messages}
-      timeZone="Asia/Yangon"
-      formats={{
-        dateTime: {
-          short: {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
+    <>
+      <Toaster position="top-center" richColors />
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+        timeZone="Asia/Yangon"
+        formats={{
+          dateTime: {
+            short: {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            },
           },
-        },
-      }}
-    >
-      <ThemeProvider
-        attribute="class"
+        }}
+      >
+        <ThemeProvider
+          attribute="class"
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
@@ -35,7 +38,8 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
         enableColorScheme
       >
         {children}
-      </ThemeProvider>
-    </NextIntlClientProvider>
+        </ThemeProvider>
+      </NextIntlClientProvider>
+    </>
   );
 }

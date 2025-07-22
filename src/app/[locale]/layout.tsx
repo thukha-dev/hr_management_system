@@ -52,7 +52,6 @@ export default async function RootLayout({ children, params }: Props) {
       >
         <Providers locale={locale} messages={messages}>
           <div className="relative flex min-h-screen flex-col">
-            <Header />
             <main className="flex-1">{children}</main>
           </div>
         </Providers>

@@ -3,6 +3,7 @@
 import React, { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,29 +17,46 @@ import { Label } from "@/components/ui/label";
 import { FormState, initialFormState } from "@/types/auth";
 import { useTranslations } from "next-intl";
 
-// Mock auth functions - replace with your actual auth implementation
-const signIn = async (provider: string) => {
-  console.log(`Signing in with ${provider}`);
-  // Implement actual sign-in logic here
-};
-
 const authenticate = async (
   email: string,
   password: string,
   remember: boolean
 ): Promise<{ success: boolean; message: string }> => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  if (email && password) {
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: data.message || 'login.errors.invalidCredentials',
+      };
+    }
+
+    // Store user data in localStorage if remember me is checked
+    if (remember && data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } else if (data.user) {
+      // For session storage
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+    }
+
     return {
       success: true,
-      message: "login.success",
+      message: 'login.success',
     };
-  } else {
+  } catch (error) {
+    console.error('Login error:', error);
     return {
       success: false,
-      message: "login.errors.invalidCredentials",
+      message: 'login.errors.networkError',
     };
   }
 };
@@ -120,7 +138,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (state.message === t("login.success")) {
+      toast.success(t("login.success"));
       router.push("/dashboard");
+    } else if (state.errors?._form?.[0]) {
+      // Show error toast for form errors
+      toast.error(state.errors._form[0]);
     }
   }, [state, router, t]);
 
@@ -297,7 +319,6 @@ export default function LoginPage() {
               variant="outline"
               type="button"
               disabled={isLoading}
-              onClick={() => signIn("google")}
               className="w-full flex items-center justify-center gap-2 bg-white text-slate-700 hover:bg-slate-50 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700"
             >
               <svg

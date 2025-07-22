@@ -1,0 +1,8 @@
+{"level":"warn","message":"Login attempt failed - User not found: test@gmail.com","service":"hr-management-system","timestamp":"2025-07-21 11:02:57"}
+INFO - 2025-07-21 11:10:52 --> Database connection successful
+INFO - 2025-07-21 11:22:48 --> Database connection successful
+INFO - 2025-07-21 11:22:58 --> Database connection successful
+INFO - 2025-07-21 14:08:37 --> Database connection successful
+INFO - 2025-07-21 14:09:00 --> Database connection successful
+INFO - 2025-07-21 16:42:05 --> Database connection successful
+INFO - 2025-07-21 16:56:28 --> Database connection successful
