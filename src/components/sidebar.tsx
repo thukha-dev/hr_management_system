@@ -9,8 +9,6 @@ import {
   LogOut,
   User,
   ChevronDown,
-  Menu,
-  X,
   Loader2,
   Calendar,
   FileText,
@@ -28,6 +26,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 type NavItem = {
   name: string;
@@ -80,8 +86,6 @@ export function Sidebar({
         },
       });
 
-      console.log("response --- ", response);
-
       if (response.ok) {
         // Clear client-side storage
         localStorage.removeItem("user");
@@ -96,14 +100,12 @@ export function Sidebar({
 
         // Delete all possible cookie variations
         deleteCookie("auth_token");
-        deleteCookie("auth-token");
 
         // Also clear all cookies that might be set on subdomains
         const hostname = window.location.hostname.split(".");
         if (hostname.length > 1) {
           const domain = hostname.slice(-2).join(".");
           document.cookie = `auth_token=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-          document.cookie = `auth-token=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
         }
 
         toast.success("Signed out successfully", { id: toastId });
@@ -153,147 +155,132 @@ export function Sidebar({
     },
   ];
 
-  return (
+  // Sidebar content as a function for reuse
+  const sidebarContent = (
     <>
-      {/* Mobile backdrop */}
-      {isOpen && isMobile && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={onClose}
-          aria-hidden="true"
-        />
+      {/* Visually hidden title for accessibility */}
+      {isMobile && (
+        <DrawerTitle asChild>
+          <VisuallyHidden>Sidebar navigation</VisuallyHidden>
+        </DrawerTitle>
       )}
-
-      <aside
-        className={cn(
-          "sidebar-container fixed md:sticky top-0 left-0 z-40 h-screen border-r bg-background transition-all duration-300 ease-in-out",
-          "transform-gpu", // Enable GPU acceleration for smoother animations
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          isMobile ? "fixed w-64" : "sticky",
-          isCollapsed ? "md:w-16" : "md:w-64",
-          "flex flex-col",
-          "shadow-lg md:shadow-none" // Show shadow on mobile, remove on desktop
-        )}
-      >
-        {/* Sticky header section */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className="flex items-center justify-between h-16 px-4">
-            {/* <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              HR Portal
-            </h1> */}
-            {/* <button
-              type="button"
-              className="md:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
-              onClick={onClose}
-              aria-label="Close sidebar"
-            >
-              <X className="h-6 w-6" />
-            </button> */}
-          </div>
+      {/* Sticky header section */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <div className="flex items-center justify-between h-16 px-4">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            MOT
+          </h1>
         </div>
-
-        {/* Scrollable content */}
-        <div className="flex-1 flex flex-col overflow-y-auto">
-          <nav className="flex-1 px-2 py-4 space-y-1">
-            {navigation.map((item) => {
-              const isActive = pathname?.startsWith(item.href);
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "group flex items-center text-sm font-medium rounded-md transition-colors",
-                    "px-3 py-2",
-                    isActive
-                      ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700",
-                    isCollapsed && "justify-center px-0"
-                  )}
-                  title={isCollapsed ? item.name : undefined}
-                >
-                  <span className={cn("flex-shrink-0", !isCollapsed && "mr-3")}>
-                    {item.icon}
-                  </span>
-                  {!isCollapsed && (
-                    <span className="truncate">{item.name}</span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Sticky footer */}
-        <div className="sticky bottom-0 border-t border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
+      </div>
+      {/* Scrollable content */}
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <nav className="flex-1 px-2 py-4 space-y-1">
+          {navigation.map((item) => {
+            const isActive = pathname?.startsWith(item.href);
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
                 className={cn(
-                  "w-full justify-start h-auto py-2 transition-colors",
-                  isCollapsed ? "px-0 justify-center" : "px-3 justify-between"
+                  "group flex items-center text-sm font-medium rounded-md transition-colors",
+                  "px-3 py-2",
+                  isActive
+                    ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700",
+                  isCollapsed && "justify-center px-0",
                 )}
+                title={isCollapsed ? item.name : undefined}
               >
-                <div className="flex items-center">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/avatars/01.png" alt="User" />
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                  {!isCollapsed && (
-                    <div className="ml-3 text-left">
-                      <p className="text-sm font-medium">User Name</p>
-                      <p className="text-xs text-muted-foreground">Admin</p>
-                    </div>
-                  )}
-                </div>
-                {!isCollapsed && (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56"
-              align="start"
-              side="top"
-              sideOffset={10}
+                <span className={cn("flex-shrink-0", !isCollapsed && "mr-3")}>
+                  {item.icon}
+                </span>
+                {!isCollapsed && <span className="truncate">{item.name}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+      {/* Sticky footer */}
+      <div className="sticky bottom-0 border-t border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start h-auto py-2 transition-colors",
+                isCollapsed ? "px-0 justify-center" : "px-3 justify-between",
+              )}
             >
-              <DropdownMenuItem asChild>
-                <Link
-                  href="/profile"
-                  className="w-full cursor-pointer flex items-center"
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <LogOut className="mr-2 h-4 w-4" />
+              <div className="flex items-center">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/avatars/01.png" alt="User" />
+                  <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+                {!isCollapsed && (
+                  <div className="ml-3 text-left">
+                    <p className="text-sm font-medium">User Name</p>
+                    <p className="text-xs text-muted-foreground">Admin</p>
+                  </div>
                 )}
-                <span>{isLoggingOut ? "Signing out..." : "Log out"}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </aside>
-
-      {/* Add padding to main content when sidebar is open on mobile */}
-      <style jsx global>{`
-        @media (max-width: 767px) {
-          body {
-            padding-left: ${isOpen ? "16rem" : "0"};
-            transition: padding-left 200ms ease-in-out;
-            overflow-x: hidden;
-          }
-        }
-      `}</style>
+              </div>
+              {!isCollapsed && (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-56"
+            align="start"
+            side="top"
+            sideOffset={10}
+          >
+            <DropdownMenuItem asChild>
+              <Link
+                href="/profile"
+                className="w-full cursor-pointer flex items-center"
+              >
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <LogOut className="mr-2 h-4 w-4" />
+              )}
+              <span>{isLoggingOut ? "Signing out..." : "Log out"}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </>
+  );
+
+  // Render Drawer for mobile, sidebar for desktop
+  if (isMobile) {
+    return (
+      <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DrawerContent>{sidebarContent}</DrawerContent>
+      </Drawer>
+    );
+  }
+
+  // Desktop sidebar
+  return (
+    <aside
+      className={cn(
+        "sidebar-container sticky top-0 left-0 z-40 h-screen border-r bg-background transition-all duration-300 ease-in-out",
+        isCollapsed ? "md:w-16" : "md:w-64",
+        "flex flex-col",
+      )}
+    >
+      {sidebarContent}
+    </aside>
   );
 }

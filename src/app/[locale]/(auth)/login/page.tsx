@@ -20,13 +20,13 @@ import { useTranslations } from "next-intl";
 const authenticate = async (
   email: string,
   password: string,
-  remember: boolean
+  remember: boolean,
 ): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
     });
@@ -36,27 +36,27 @@ const authenticate = async (
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || 'login.errors.invalidCredentials',
+        message: data.message || "login.errors.invalidCredentials",
       };
     }
 
     // Store user data in localStorage if remember me is checked
     if (remember && data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data.user));
     } else if (data.user) {
       // For session storage
-      sessionStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem("user", JSON.stringify(data.user));
     }
 
     return {
       success: true,
-      message: 'login.success',
+      message: "login.success",
     };
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return {
       success: false,
-      message: 'login.errors.networkError',
+      message: "login.errors.networkError",
     };
   }
 };
@@ -64,7 +64,7 @@ const authenticate = async (
 const createLoginAction = (t: any) => {
   return async function loginAction(
     prevState = initialFormState,
-    formData: FormData
+    formData: FormData,
   ): Promise<FormState> {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -131,7 +131,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [state, formAction] = useActionState(
     createLoginAction(t),
-    initialFormState
+    initialFormState,
   );
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -150,7 +150,7 @@ export default function LoginPage() {
     setIsLoading(
       !!state.message &&
         state.message !== "" &&
-        state.message !== t("login.success")
+        state.message !== t("login.success"),
     );
   }, [state]);
 

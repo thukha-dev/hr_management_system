@@ -1,5 +1,5 @@
 // Example using Lucide React icons
-import { Home, Users, Settings, User, Bell, LogOut } from 'lucide-react';
+import { Home, Users, Settings, User, Bell, LogOut } from "lucide-react";
 
 export const Icons = {
   home: Home,

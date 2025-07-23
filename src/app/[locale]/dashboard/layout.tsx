@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Main content */}
         <main
           className={cn(
-            "flex-1 overflow-y-auto bg-background transition-all duration-300 ease-in-out"
+            "flex-1 overflow-y-auto bg-background transition-all duration-300 ease-in-out",
             // isCollapsed ? "md:ml-16" : "md:ml-64"
           )}
         >

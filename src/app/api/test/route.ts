@@ -22,7 +22,7 @@ export async function GET() {
         message: "Failed to connect to MongoDB",
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

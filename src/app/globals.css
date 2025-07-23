@@ -46,3 +46,124 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-in-top {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-out-top {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-out-bottom {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes slide-fancy-in-left {
+    from {
+      transform: translateX(-100%) scale(0.98);
+      opacity: 0.2;
+      filter: blur(2px);
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+  @keyframes slide-fancy-out-left {
+    from {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+      filter: blur(0);
+    }
+    to {
+      transform: translateX(-100%) scale(0.98);
+      opacity: 0.2;
+      filter: blur(2px);
+    }
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left 2s both;
+  }
+  .animate-slide-out-left {
+    animation: slide-out-left 2s both;
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right 2s both;
+  }
+  .animate-slide-out-right {
+    animation: slide-out-right 2s both;
+  }
+  .animate-slide-in-top {
+    animation: slide-in-top 2s both;
+  }
+  .animate-slide-out-top {
+    animation: slide-out-top 2s both;
+  }
+  .animate-slide-in-bottom {
+    animation: slide-in-bottom 2s both;
+  }
+  .animate-slide-out-bottom {
+    animation: slide-out-bottom 2s both;
+  }
+  .animate-fancy-slide-in-left {
+    animation: slide-fancy-in-left 3s cubic-bezier(0.86, 0, 0.07, 1) both;
+  }
+  .animate-fancy-slide-out-left {
+    animation: slide-fancy-out-left 3s cubic-bezier(0.86, 0, 0.07, 1) both;
+  }
+}

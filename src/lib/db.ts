@@ -38,19 +38,22 @@ async function testConnection() {
     if (error instanceof MongoServerError) {
       const errorMessage = `MongoDB Server Error (${error.codeName}): ${error.message}`;
       logger.error(errorMessage);
-      
-      if (error.codeName === 'AuthenticationFailed') {
-        const authError = "Authentication failed. Please check your MongoDB credentials.";
+
+      if (error.codeName === "AuthenticationFailed") {
+        const authError =
+          "Authentication failed. Please check your MongoDB credentials.";
         logger.error(authError);
-      } else if (error.codeName === 'BadValue') {
-        const badValueError = "Invalid connection string. Please check your MONGODB_URI.";
+      } else if (error.codeName === "BadValue") {
+        const badValueError =
+          "Invalid connection string. Please check your MONGODB_URI.";
         logger.error(badValueError);
       }
     } else if (error instanceof Error) {
       logger.error(`Connection Error: ${error.message}`);
-      
-      if (error.message.includes('ECONNREFUSED')) {
-        const connectionRefused = "MongoDB server is not running or not accessible at the specified address.";
+
+      if (error.message.includes("ECONNREFUSED")) {
+        const connectionRefused =
+          "MongoDB server is not running or not accessible at the specified address.";
         logger.error(connectionRefused);
         logger.error(`Connection URI: ${uri}`);
       }
@@ -67,12 +70,13 @@ if (process.env.NODE_ENV === "development") {
 
   if (!globalWithMongo._mongoClientPromise) {
     console.log("Creating new MongoDB connection...");
-    globalWithMongo._mongoClientPromise = client.connect()
-      .then(connectedClient => {
+    globalWithMongo._mongoClientPromise = client
+      .connect()
+      .then((connectedClient) => {
         console.log("✅ MongoDB client connected successfully");
         return connectedClient;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("❌ Failed to connect to MongoDB:", error);
         throw error;
       });
@@ -80,12 +84,13 @@ if (process.env.NODE_ENV === "development") {
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
   // In production mode, avoid using a global variable.
-  clientPromise = client.connect()
-    .then(connectedClient => {
+  clientPromise = client
+    .connect()
+    .then((connectedClient) => {
       console.log("✅ MongoDB client connected successfully in production");
       return connectedClient;
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("❌ Failed to connect to MongoDB in production:", error);
       throw error;
     });

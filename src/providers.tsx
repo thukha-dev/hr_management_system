@@ -31,13 +31,13 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
       >
         <ThemeProvider
           attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-        storageKey="theme"
-        enableColorScheme
-      >
-        {children}
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="theme"
+          enableColorScheme
+        >
+          {children}
         </ThemeProvider>
       </NextIntlClientProvider>
     </>

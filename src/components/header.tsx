@@ -50,16 +50,12 @@ export function Header({ onMenuClick, isSidebarOpen = false }: HeaderProps) {
             size="icon"
             className={cn(
               "h-8 w-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-              "md:h-9 md:w-9"
+              "md:h-9 md:w-9",
             )}
             onClick={onMenuClick}
             aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
-            {isSidebarOpen ? (
-              <X className="h-4 w-4 md:h-5 md:w-5" />
-            ) : (
-              <Menu className="h-4 w-4 md:h-5 md:w-5" />
-            )}
+            <Menu className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
 
           {/* Logo - Hidden on mobile */}
@@ -92,7 +88,7 @@ export function Header({ onMenuClick, isSidebarOpen = false }: HeaderProps) {
                 size="sm"
                 className={cn(
                   "h-7 px-2 text-xs font-medium",
-                  currentLocale !== locale && "text-muted-foreground"
+                  currentLocale !== locale && "text-muted-foreground",
                 )}
                 onClick={() => switchLanguage(locale)}
               >
