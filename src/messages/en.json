@@ -9,7 +9,7 @@
   },
   "login": {
     "title": "Sign in to your account",
-    "subtitle": "Enter your email and password to login to your account",
+    "subtitle": "Enter your employee id and password to login to your account",
     "employeeId": "Employee ID",
     "employeeIdPlaceholder": "Enter your employee ID",
     "email": "Email",

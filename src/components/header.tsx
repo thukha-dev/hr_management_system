@@ -45,18 +45,20 @@ export function Header({ onMenuClick, isSidebarOpen = false }: HeaderProps) {
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
           {/* Sidebar Toggle Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-8 w-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-              "md:h-9 md:w-9",
-            )}
-            onClick={onMenuClick}
-            aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
-          >
-            <Menu className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
+          {!pathname.includes("/login") && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
+                "md:h-9 md:w-9",
+              )}
+              onClick={onMenuClick}
+              aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+            >
+              <Menu className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+          )}
 
           {/* Logo - Hidden on mobile */}
           <div className="hidden items-center md:flex">

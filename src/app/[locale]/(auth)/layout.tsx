@@ -11,7 +11,7 @@ export default function AuthLayout({
       <Header />
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <main className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-black p-4">
         {children}
       </main>
     </div>
