@@ -1,30 +1,45 @@
 "use client";
 
-import { useState, ReactNode } from 'react';
-import { Sidebar } from '@/components/sidebar';
-import { Header } from '@/components/header';
+import { useState, ReactNode, useEffect } from "react";
+import { Sidebar } from "@/components/sidebar";
+import { Header } from "@/components/header";
+import { cn } from "@/lib/utils";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    // On mobile, toggle the sidebar open/closed
+    // On desktop, toggle between collapsed/expanded states
+    if (window.innerWidth < 768) {
+      setSidebarOpen(!sidebarOpen);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-      
-      <div className="flex flex-1 relative">
+    <div className="flex min-h-screen flex-col">
+      {/* Sticky header */}
+      <Header onMenuClick={toggleSidebar} isSidebarOpen={sidebarOpen} />
+
+      <div className="flex flex-1">
         {/* Sidebar */}
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
+        <Sidebar
+          isOpen={sidebarOpen}
+          isCollapsed={isCollapsed}
+          onClose={() => setSidebarOpen(false)}
+        />
+
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 md:p-6">
-          <div className="max-w-7xl mx-auto w-full">
-            {children}
-          </div>
+        <main
+          className={cn(
+            "flex-1 overflow-y-auto bg-background transition-all duration-300 ease-in-out"
+            // isCollapsed ? "md:ml-16" : "md:ml-64"
+          )}
+        >
+          <div className="mx-auto max-w-7xl p-4 md:p-6">{children}</div>
         </main>
       </div>
     </div>

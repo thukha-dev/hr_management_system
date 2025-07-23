@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Users,
@@ -14,11 +14,11 @@ import {
   Loader2,
   Calendar,
   FileText,
-} from 'lucide-react';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,8 +26,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 type NavItem = {
   name: string;
@@ -37,10 +37,15 @@ type NavItem = {
 
 interface SidebarProps {
   isOpen: boolean;
+  isCollapsed?: boolean;
   onClose: () => void;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({
+  isOpen,
+  isCollapsed = false,
+  onClose,
+}: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
@@ -55,67 +60,69 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     handleResize();
 
     // Add event listener
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     // Clean up
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    const toastId = toast.loading('Signing out...');
-    
+    const toastId = toast.loading("Signing out...");
+
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-      console.log('response --- ', response);
+      console.log("response --- ", response);
 
       if (response.ok) {
         // Clear client-side storage
-        localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
-        
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
+
         // Function to delete cookie by name
         const deleteCookie = (name: string) => {
           document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
           document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
           document.cookie = `${name}=; path=/; domain=.${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
         };
-        
+
         // Delete all possible cookie variations
-        deleteCookie('auth_token');
-        deleteCookie('auth-token');
-        
+        deleteCookie("auth_token");
+        deleteCookie("auth-token");
+
         // Also clear all cookies that might be set on subdomains
-        const hostname = window.location.hostname.split('.');
+        const hostname = window.location.hostname.split(".");
         if (hostname.length > 1) {
-          const domain = hostname.slice(-2).join('.');
+          const domain = hostname.slice(-2).join(".");
           document.cookie = `auth_token=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
           document.cookie = `auth-token=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
         }
-        
-        toast.success('Signed out successfully', { id: toastId });
-        
+
+        toast.success("Signed out successfully", { id: toastId });
+
         // Always redirect to login page with current locale
         const currentPath = window.location.pathname;
-        const locale = currentPath.split('/')[1] || 'en';
-        
+        const locale = currentPath.split("/")[1] || "en";
+
         // Force a full page reload to ensure all auth state is cleared
         window.location.href = `/${locale}/login`;
       } else {
         const error = await response.json().catch(() => ({}));
-        toast.error(error.message || 'Failed to sign out. Please try again.', { id: toastId });
+        toast.error(error.message || "Failed to sign out. Please try again.", {
+          id: toastId,
+        });
       }
     } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('An unexpected error occurred', { id: toastId });
+      console.error("Logout error:", error);
+      toast.error("An unexpected error occurred", { id: toastId });
     } finally {
       setIsLoggingOut(false);
       onClose();
@@ -123,86 +130,145 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const navigation: NavItem[] = [
-    { name: 'Dashboard', href: '/dashboard', icon: <Home className="h-5 w-5" /> },
-    { name: 'Employees', href: '/employees', icon: <Users className="h-5 w-5" /> },
-    { name: 'Leave', href: '/leave', icon: <Calendar className="h-5 w-5" /> },
-    { name: 'Documents', href: '/documents', icon: <FileText className="h-5 w-5" /> },
-    { name: 'Settings', href: '/settings', icon: <Settings className="h-5 w-5" /> },
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: <Home className="h-5 w-5" />,
+    },
+    {
+      name: "Employees",
+      href: "/employees",
+      icon: <Users className="h-5 w-5" />,
+    },
+    { name: "Leave", href: "/leave", icon: <Calendar className="h-5 w-5" /> },
+    {
+      name: "Documents",
+      href: "/documents",
+      icon: <FileText className="h-5 w-5" />,
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: <Settings className="h-5 w-5" />,
+    },
   ];
 
   return (
     <>
-
-
-      {/* Overlay - Only on mobile */}
+      {/* Mobile backdrop */}
       {isOpen && isMobile && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
-      <div 
-        className={`fixed md:sticky top-0 left-0 h-screen transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 transition-transform duration-200 ease-in-out z-30 w-64 flex-shrink-0 flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700`}
+      <aside
+        className={cn(
+          "sidebar-container fixed md:sticky top-0 left-0 z-40 h-screen border-r bg-background transition-all duration-300 ease-in-out",
+          "transform-gpu", // Enable GPU acceleration for smoother animations
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          isMobile ? "fixed w-64" : "sticky",
+          isCollapsed ? "md:w-16" : "md:w-64",
+          "flex flex-col",
+          "shadow-lg md:shadow-none" // Show shadow on mobile, remove on desktop
+        )}
       >
-        <div className="flex flex-col w-64 h-full bg-white border-r">
-        <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
-          <div className="flex items-center flex-shrink-0 px-4">
-            <h1 className="text-xl font-bold">HR Portal</h1>
-          </div>
-          <div className="mt-5 flex-1 flex flex-col">
-            <nav className="flex-1 px-2 space-y-1">
-              {navigation.map((item) => {
-                const isActive = pathname?.startsWith(item.href);
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      isActive
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
+        {/* Sticky header section */}
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className="flex items-center justify-between h-16 px-4">
+            {/* <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              HR Portal
+            </h1> */}
+            {/* <button
+              type="button"
+              className="md:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+              onClick={onClose}
+              aria-label="Close sidebar"
+            >
+              <X className="h-6 w-6" />
+            </button> */}
           </div>
         </div>
-        <div className="mt-auto flex-shrink-0 border-t border-gray-200 p-4">
+
+        {/* Scrollable content */}
+        <div className="flex-1 flex flex-col overflow-y-auto">
+          <nav className="flex-1 px-2 py-4 space-y-1">
+            {navigation.map((item) => {
+              const isActive = pathname?.startsWith(item.href);
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "group flex items-center text-sm font-medium rounded-md transition-colors",
+                    "px-3 py-2",
+                    isActive
+                      ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700",
+                    isCollapsed && "justify-center px-0"
+                  )}
+                  title={isCollapsed ? item.name : undefined}
+                >
+                  <span className={cn("flex-shrink-0", !isCollapsed && "mr-3")}>
+                    {item.icon}
+                  </span>
+                  {!isCollapsed && (
+                    <span className="truncate">{item.name}</span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Sticky footer */}
+        <div className="sticky bottom-0 border-t border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between h-auto py-2 px-3 hover:bg-gray-100">
-                <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start h-auto py-2 transition-colors",
+                  isCollapsed ? "px-0 justify-center" : "px-3 justify-between"
+                )}
+              >
+                <div className="flex items-center">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
+                    <AvatarImage src="/avatars/01.png" alt="User" />
+                    <AvatarFallback>U</AvatarFallback>
                   </Avatar>
-                  <div className="text-left">
-                    <p className="text-sm font-medium">Admin User</p>
-                    <p className="text-xs text-muted-foreground">admin@example.com</p>
-                  </div>
+                  {!isCollapsed && (
+                    <div className="ml-3 text-left">
+                      <p className="text-sm font-medium">User Name</p>
+                      <p className="text-xs text-muted-foreground">Admin</p>
+                    </div>
+                  )}
                 </div>
-                <ChevronDown className="h-4 w-4 text-muted-foreground ml-2" />
+                {!isCollapsed && (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" side="top">
+            <DropdownMenuContent
+              className="w-56"
+              align="start"
+              side="top"
+              sideOffset={10}
+            >
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="cursor-pointer">
+                <Link
+                  href="/profile"
+                  className="w-full cursor-pointer flex items-center"
+                >
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-400 dark:focus:bg-red-900/20 dark:focus:text-red-300 cursor-pointer"
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
               >
@@ -211,19 +277,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 ) : (
                   <LogOut className="mr-2 h-4 w-4" />
                 )}
-                <span>{isLoggingOut ? 'Signing out...' : 'Log out'}</span>
+                <span>{isLoggingOut ? "Signing out..." : "Log out"}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-      </div>
-      
+      </aside>
+
       {/* Add padding to main content when sidebar is open on mobile */}
       <style jsx global>{`
         @media (max-width: 767px) {
           body {
-            padding-left: ${isOpen ? '16rem' : '0'};
+            padding-left: ${isOpen ? "16rem" : "0"};
             transition: padding-left 200ms ease-in-out;
             overflow-x: hidden;
           }
