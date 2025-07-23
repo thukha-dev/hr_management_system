@@ -18,7 +18,7 @@ import { FormState, initialFormState } from "@/types/auth";
 import { useTranslations } from "next-intl";
 
 const authenticate = async (
-  email: string,
+  employeeId: string,
   password: string,
   remember: boolean,
 ): Promise<{ success: boolean; message: string }> => {
@@ -28,7 +28,7 @@ const authenticate = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ employeeId, password }),
     });
 
     const data = await response.json();
@@ -66,17 +66,15 @@ const createLoginAction = (t: any) => {
     prevState = initialFormState,
     formData: FormData,
   ): Promise<FormState> {
-    const email = formData.get("email") as string;
+    const employeeId = formData.get("employeeId") as string;
     const password = formData.get("password") as string;
     const remember = formData.get("remember") === "on";
 
     const errors: FormState["errors"] = {};
 
-    // Email validation
-    if (!email) {
-      errors.email = [t("login.errors.emailRequired")];
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = [t("login.errors.invalidEmail")];
+    // Employee ID validation
+    if (!employeeId) {
+      errors.employeeId = [t("login.errors.employeeIdRequired")];
     }
 
     // Password validation
@@ -90,24 +88,24 @@ const createLoginAction = (t: any) => {
       return {
         ...initialFormState,
         errors,
-        values: { email, password, remember },
+        values: { employeeId, password, remember },
       };
     }
 
     try {
-      const result = await authenticate(email, password, remember);
+      const result = await authenticate(employeeId, password, remember);
 
       if (result.success) {
         return {
           ...initialFormState,
           message: t("login.success"),
-          values: { email, password, remember },
+          values: { employeeId, password, remember },
         };
       } else {
         return {
           ...initialFormState,
           errors: { _form: [t("login.errors.invalidCredentials")] },
-          values: { email, password: "", remember },
+          values: { employeeId, password: "", remember },
         };
       }
     } catch (error) {
@@ -120,7 +118,7 @@ const createLoginAction = (t: any) => {
               : t("login.errors.unknownError"),
           ],
         },
-        values: { email, password: "", remember },
+        values: { employeeId, password: "", remember },
       };
     }
   };
@@ -199,27 +197,27 @@ export default function LoginPage() {
           <form ref={formRef} action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label
-                htmlFor="email"
+                htmlFor="employeeId"
                 className="text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                {t("login.email")}
+                {t("login.employeeId")}
               </Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder={t("login.emailPlaceholder")}
+                id="employeeId"
+                name="employeeId"
+                type="text"
+                placeholder={t("login.employeeIdPlaceholder")}
                 required
-                defaultValue={state.values?.email}
+                defaultValue={state.values?.employeeId}
                 className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${
-                  state.errors?.email
+                  state.errors?.employeeId
                     ? "border-red-500"
                     : "border-slate-300 dark:border-slate-600"
                 }`}
               />
-              {state.errors?.email && (
+              {state.errors?.employeeId && (
                 <p className="mt-1 text-sm text-red-500">
-                  {state.errors.email[0]}
+                  {state.errors.employeeId[0]}
                 </p>
               )}
             </div>

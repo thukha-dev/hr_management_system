@@ -10,6 +10,8 @@
   "login": {
     "title": "Sign in to your account",
     "subtitle": "Enter your email and password to login to your account",
+    "employeeId": "Employee ID",
+    "employeeIdPlaceholder": "Enter your employee ID",
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "password": "Password",
@@ -22,6 +24,7 @@
     "noAccount": "Don't have an account?",
     "signUp": "Sign up",
     "errors": {
+      "employeeIdRequired": "Employee ID is required",
       "emailRequired": "Email is required",
       "invalidEmail": "Please enter a valid email address",
       "passwordRequired": "Password is required",

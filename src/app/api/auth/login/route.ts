@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { UserModel } from "@/app/models/User";
+import UserModel from "@/app/models/User";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import logger from "@/lib/logger";
 
 interface LoginRequest {
-  email: string;
+  employeeId: string;
   password: string;
 }
 
@@ -43,19 +43,20 @@ export async function POST(request: Request) {
     // Ensure MongoDB connection
     await connectMongoose();
 
-    const { email, password } = (await request.json()) as LoginRequest;
+    const { employeeId, password } = (await request.json()) as LoginRequest;
 
-    if (!email || !password) {
+    if (!employeeId || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Employee ID and password are required" },
         { status: 400 },
       );
     }
 
-    // Find user by email
-    const user = await UserModel.findOne({ email }).select("+password");
+    // Find user by employeeId
+    const user = await UserModel.findOne({ employeeId }).select("+password");
 
-    if (!user) {
+    console.log("user --- ", user);
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 },
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
 
     // Create JWT token
     const token = sign(
-      { userId: user._id, name: user.name, email: user.email, role: user.role },
+      { userId: user._id, name: user.name, employeeId: user.employeeId, role: user.role },
       process.env.NEXT_AUTH_JWT_SECRET || "your-secret-key",
       { expiresIn: "1d" },
     );
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
     const response = NextResponse.json(
       {
         message: "Login successful",
-        user: { id: user._id, email: user.email },
+        user: { id: user._id, employeeId: user.employeeId },
       },
       { status: 200 },
     );

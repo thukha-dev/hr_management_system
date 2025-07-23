@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { connect, disconnect } from "mongoose";
-import { UserModel, UserRole } from "@/app/models/User";
+import UserModel from "@/app/models/User";
+import { UserRole } from "@/types/auth";
 import bcrypt from "bcryptjs";
 
 async function seedSuperAdmin() {
@@ -14,11 +15,22 @@ async function seedSuperAdmin() {
     await connect(process.env.MONGODB_URI);
     console.log("✅ Connected to MongoDB");
 
-    const email = "admin@example.com";
+    const employeeId = "MOT-00001";
+    const name = "Super Admin";
+    const joinDate = new Date();
+    const department = "IT";
+    const position = "IT Manager";
+    const contactInfo = {
+      phone: "+1234567890",
+      email: "admin@example.com",
+      address: "123 Main St, Anytown, USA",
+    };
+    const profilePhoto = "https://example.com/profile.jpg";
+    const role = UserRole.SuperAdmin;
     const password = "password123"; // More secure default password
 
     console.log("🔍 Checking for existing admin user...");
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ employeeId });
 
     if (existingUser) {
       console.log("🔄 Updating existing admin user...");
@@ -28,15 +40,20 @@ async function seedSuperAdmin() {
     } else {
       console.log("👤 Creating new admin user...");
       await UserModel.create({
-        name: "Super Admin",
-        email,
+        employeeId,
+        name,
+        joinDate,
+        department,
+        position,
+        contactInfo,
+        profilePhoto,
+        role,
         password: await bcrypt.hash(password, 12),
-        role: UserRole.SuperAdmin,
       });
     }
 
     console.log("✅ Super admin user created/updated successfully!");
-    console.log("📧 Email:", email);
+    console.log("📧 Employee ID:", employeeId);
     console.log("🔑 Password:", password);
     console.log("👑 Role:", UserRole.SuperAdmin);
   } catch (error) {
