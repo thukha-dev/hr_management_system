@@ -24,6 +24,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ),
+  icons: {
+    icon: "https://www.myanmaronlinetechnology.com/wp-content/uploads/2022/09/mot-1.png",
+    shortcut:
+      "https://www.myanmaronlinetechnology.com/wp-content/uploads/2022/09/mot-1.png",
+    apple:
+      "https://www.myanmaronlinetechnology.com/wp-content/uploads/2022/09/mot-1.png",
+  },
 };
 
 type Props = {

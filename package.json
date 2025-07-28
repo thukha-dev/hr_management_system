@@ -19,6 +19,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@tanstack/react-table": "^8.21.3",
     "@typegoose/auto-increment": "^4.13.0",
     "@typegoose/typegoose": "^12.17.0",
     "@types/jsonwebtoken": "^9.0.10",
