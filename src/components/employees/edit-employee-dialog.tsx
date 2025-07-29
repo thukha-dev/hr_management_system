@@ -22,13 +22,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Calendar as CalendarIcon,
   CheckCircle2,
   Loader2,
   Upload,
   X,
 } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -265,7 +265,7 @@ export function EditEmployeeDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto">
         {isSubmitted ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="rounded-full bg-green-100 p-3 mb-4">
@@ -279,73 +279,224 @@ export function EditEmployeeDialog({
             </p>
           </div>
         ) : (
-          <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
-            <DialogHeader>
-              <DialogTitle>Edit Employee</DialogTitle>
-              <DialogDescription>
+          <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4" noValidate>
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-xl font-bold">
+                Edit Employee
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
                 Update the employee details below
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               {/* Employee ID */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="employeeId" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="employeeId" className="text-left sm:text-right sm:pt-2">
                   Employee ID
                 </Label>
-                <Input
-                  id="employeeId"
-                  name="employeeId"
-                  defaultValue={employee.employeeId}
-                  className="col-span-3"
-                  disabled
-                />
+                <div className="sm:col-span-3">
+                  <Input
+                    id="employeeId"
+                    name="employeeId"
+                    defaultValue={employee.employeeId}
+                    className="w-full"
+                    disabled
+                  />
+                </div>
               </div>
 
               {/* Name */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="name" className="text-left sm:text-right sm:pt-2">
                   Full Name
                 </Label>
-                <Input id="name" className="col-span-3" required />
-                {formState.errors?.email && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {formState.errors?.email}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input 
+                    id="name" 
+                    name="name"
+                    defaultValue={employee.name}
+                    className="w-full" 
+                    required 
+                  />
+                  {formState.errors?.name && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="email" className="text-left sm:text-right sm:pt-2">
+                  Email
+                </Label>
+                <div className="sm:col-span-3">
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    defaultValue={email}
+                    className="w-full"
+                    required
+                  />
+                  {formState.errors?.email && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Join Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label className="text-left sm:text-right sm:pt-2">Join Date</Label>
+                <div className="sm:col-span-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <input
+                    type="hidden"
+                    name="joinDate"
+                    value={date?.toISOString()}
+                  />
+                </div>
+              </div>
+
+              {/* Department */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="department" className="text-left sm:text-right sm:pt-2">
+                  Department
+                </Label>
+                <div className="sm:col-span-3">
+                  <Input
+                    id="department"
+                    name="department"
+                    defaultValue={employee.department}
+                    className="w-full"
+                    required
+                  />
+                  {formState.errors?.department && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.department}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Position */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="position" className="text-left sm:text-right sm:pt-2">
+                  Position
+                </Label>
+                <div className="sm:col-span-3">
+                  <Input
+                    id="position"
+                    name="position"
+                    defaultValue={employee.position}
+                    className="w-full"
+                    required
+                  />
+                  {formState.errors?.position && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.position}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Role */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="role" className="text-left sm:text-right sm:pt-2">
+                  Role
+                </Label>
+                <div className="sm:col-span-3">
+                  <Select
+                    name="role"
+                    value={role}
+                    onValueChange={(value: UserRole) => setRole(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(UserRole).map((roleValue) => (
+                        <SelectItem key={roleValue} value={roleValue}>
+                          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Phone */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="phone" className="text-left sm:text-right sm:pt-2">
                   Phone
                 </Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  defaultValue={phone}
-                  className="col-span-3"
-                />
+                <div className="sm:col-span-3">
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    defaultValue={phone}
+                    className="w-full"
+                    required
+                  />
+                  {formState.errors?.phone && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.phone}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Address */}
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="address" className="text-right mt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="address" className="text-left sm:text-right sm:pt-2">
                   Address
                 </Label>
-                <Textarea
-                  id="address"
-                  name="address"
-                  defaultValue={address}
-                  className="col-span-3 min-h-[100px]"
-                />
+                <div className="sm:col-span-3">
+                  <Textarea
+                    id="address"
+                    name="address"
+                    defaultValue={address}
+                    className="w-full min-h-[100px]"
+                    required
+                  />
+                  {formState.errors?.address && (
+                    <p className="text-sm text-destructive mt-1">
+                      {formState.errors.address}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Profile Photo */}
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label className="text-right mt-2">Profile Photo</Label>
-                <div className="col-span-3 space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label className="text-left sm:text-right sm:pt-2">Profile Photo</Label>
+                <div className="sm:col-span-3 space-y-2">
                   {/* Image Preview */}
                   {previewUrl && (
                     <div className="relative w-24 h-24 mb-2">
@@ -369,17 +520,19 @@ export function EditEmployeeDialog({
                   {/* File Input */}
                   <label
                     htmlFor="profilePhoto"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer 
+                      bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 
+                      transition-colors duration-200"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-2 text-gray-500" />
-                      <p className="mb-2 text-sm text-gray-500">
+                      <Upload className="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="font-semibold">
                           {previewUrl ? "Change photo" : "Click to upload"}
                         </span>{" "}
                         or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         PNG, JPG (MAX. 5MB)
                       </p>
                     </div>
@@ -397,16 +550,21 @@ export function EditEmployeeDialog({
               </div>
 
               {/* Form Actions */}
-              <div className="flex justify-end gap-2 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isPending}>
+                <Button 
+                  type="submit" 
+                  disabled={isPending}
+                  className="w-full sm:w-auto"
+                >
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeDataTable } from "@/components/employees/employee-data-table";
 import { Plus, MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { AddEmployeeDialog } from "@/components/employees/add-employee-dialog";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
@@ -155,6 +156,10 @@ export default function EmployeesPage() {
     {
       accessorKey: "joinDate",
       header: "Join Date",
+      cell: ({ row }) => {
+        const date = row.getValue("joinDate") as string;
+        return date ? format(parseISO(date), "PP") : "-";
+      },
     },
     {
       id: "actions",

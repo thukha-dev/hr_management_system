@@ -195,7 +195,7 @@ export function AddEmployeeDialog({
           Add Employee
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto">
         {isSubmitted ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="rounded-full bg-green-100 p-3 mb-4">
@@ -226,126 +226,138 @@ export function AddEmployeeDialog({
 
             <div className="space-y-3">
               {/* Employee ID */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="employeeId" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="employeeId" className="text-left sm:text-right sm:pt-2">
                   Employee ID
                 </Label>
-                <Input
-                  id="employeeId"
-                  name="employeeId"
-                  className="col-span-3"
-                  placeholder="MOT-00001"
-                  required
-                />
-                {state?.errors?.employeeId && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.employeeId}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input
+                    id="employeeId"
+                    name="employeeId"
+                    className="w-full"
+                    placeholder="MOT-00001"
+                    required
+                  />
+                  {state?.errors?.employeeId && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.employeeId}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Name */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="name" className="text-left sm:text-right sm:pt-2">
                   Full Name
                 </Label>
-                <Input id="name" name="name" className="col-span-3" required />
-                {state?.errors?.name && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.name}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input id="name" name="name" className="w-full" required />
+                  {state?.errors?.name && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.name}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Join Date */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Join Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "col-span-3 justify-start text-left font-normal",
-                        !date && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <input
-                  type="hidden"
-                  name="joinDate"
-                  value={date?.toISOString()}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label className="text-left sm:text-right sm:pt-2">Join Date</Label>
+                <div className="sm:col-span-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <input
+                    type="hidden"
+                    name="joinDate"
+                    value={date?.toISOString()}
+                  />
+                </div>
               </div>
 
               {/* Department */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="department" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="department" className="text-left sm:text-right sm:pt-2">
                   Department
                 </Label>
-                <Input
-                  id="department"
-                  name="department"
-                  className="col-span-3"
-                  required
-                />
-                {state?.errors?.department && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.department}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input
+                    id="department"
+                    name="department"
+                    className="w-full"
+                    required
+                  />
+                  {state?.errors?.department && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.department}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Position */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="position" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="position" className="text-left sm:text-right sm:pt-2">
                   Position
                 </Label>
-                <Input
-                  id="position"
-                  name="position"
-                  className="col-span-3"
-                  required
-                />
-                {state?.errors?.position && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.position}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input
+                    id="position"
+                    name="position"
+                    className="w-full"
+                    required
+                  />
+                  {state?.errors?.position && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.position}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Role */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="role" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="role" className="text-left sm:text-right sm:pt-2">
                   Role
                 </Label>
-                <Select
-                  name="role"
-                  value={role}
-                  onValueChange={(value: UserRole) => setRole(value)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(UserRole).map((roleValue) => (
-                      <SelectItem key={roleValue} value={roleValue}>
-                        {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="sm:col-span-3">
+                  <Select
+                    name="role"
+                    value={role}
+                    onValueChange={(value: UserRole) => setRole(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(UserRole).map((roleValue) => (
+                        <SelectItem key={roleValue} value={roleValue}>
+                          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Contact Info */}
@@ -353,66 +365,72 @@ export function AddEmployeeDialog({
                 <h4 className="text-sm font-medium">Contact Information</h4>
 
                 {/* Email */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                  <Label htmlFor="email" className="text-left sm:text-right sm:pt-2">
                     Email
                   </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    className="col-span-3"
-                    required
-                  />
-                  {state?.errors?.email && (
-                    <p className="col-span-4 text-right text-sm text-destructive">
-                      {state.errors.email}
-                    </p>
-                  )}
+                  <div className="sm:col-span-3">
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      className="w-full"
+                      required
+                    />
+                    {state?.errors?.email && (
+                      <p className="text-sm text-destructive mt-1">
+                        {state.errors.email}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Phone */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                  <Label htmlFor="phone" className="text-left sm:text-right sm:pt-2">
                     Phone
                   </Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="col-span-3"
-                    required
-                  />
-                  {state?.errors?.phone && (
-                    <p className="col-span-4 text-right text-sm text-destructive">
-                      {state.errors.phone}
-                    </p>
-                  )}
+                  <div className="sm:col-span-3">
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      className="w-full"
+                      required
+                    />
+                    {state?.errors?.phone && (
+                      <p className="text-sm text-destructive mt-1">
+                        {state.errors.phone}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Address */}
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label htmlFor="address" className="text-right mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                  <Label htmlFor="address" className="text-left sm:text-right sm:pt-2">
                     Address
                   </Label>
-                  <Textarea
-                    id="address"
-                    name="address"
-                    className="col-span-3 flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    required
-                  />
-                  {state?.errors?.address && (
-                    <p className="col-span-4 text-right text-sm text-destructive">
-                      {state.errors.address}
-                    </p>
-                  )}
+                  <div className="sm:col-span-3">
+                    <Textarea
+                      id="address"
+                      name="address"
+                      className="w-full min-h-[100px]"
+                      required
+                    />
+                    {state?.errors?.address && (
+                      <p className="text-sm text-destructive mt-1">
+                        {state.errors.address}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Profile Photo */}
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label className="text-right mt-2">Profile Photo</Label>
-                <div className="col-span-3 space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label className="text-left sm:text-right sm:pt-2">Profile Photo</Label>
+                <div className="sm:col-span-3 space-y-2">
                   {/* Image Preview */}
                   {previewUrl && (
                     <div className="relative w-24 h-24 mb-2">
@@ -440,17 +458,19 @@ export function AddEmployeeDialog({
                   {/* File Input */}
                   <label
                     htmlFor="profilePhoto"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer 
+                      bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 
+                      transition-colors duration-200"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-2 text-gray-500" />
-                      <p className="mb-2 text-sm text-gray-500">
+                      <Upload className="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="font-semibold">
                           {previewUrl ? "Change photo" : "Click to upload"}
                         </span>{" "}
                         or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         PNG, JPG (MAX. 5MB)
                       </p>
                     </div>
@@ -474,7 +494,7 @@ export function AddEmployeeDialog({
                     />
                   </label>
                   {state?.errors?.profilePhoto && (
-                    <p className="text-right text-sm text-destructive">
+                    <p className="text-sm text-destructive mt-1">
                       {state.errors.profilePhoto}
                     </p>
                   )}
@@ -482,27 +502,49 @@ export function AddEmployeeDialog({
               </div>
 
               {/* Password */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label htmlFor="password" className="text-left sm:text-right sm:pt-2">
                   Password
                 </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  className="col-span-3"
-                  placeholder="••••••••"
-                  required
-                />
-                {state?.errors?.password && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.password}
-                  </p>
-                )}
+                <div className="sm:col-span-3">
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    className="w-full"
+                    placeholder="••••••••"
+                    required
+                  />
+                  {state?.errors?.password && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.password}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-            <DialogFooter>
-              <SubmitButton />
+            
+            <DialogFooter className="sm:justify-start">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setOpen(false)}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isPending}
+                className="w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : 'Save'}
+              </Button>
             </DialogFooter>
           </form>
         )}
@@ -515,7 +557,12 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Saving..." : "Save"}
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Saving...
+        </>
+      ) : 'Save'}
     </Button>
   );
 }

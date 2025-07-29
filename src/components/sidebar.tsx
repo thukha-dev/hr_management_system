@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import {
   Home,
   Users,
@@ -53,6 +54,7 @@ export function Sidebar({
   isCollapsed = false,
   onClose,
 }: SidebarProps) {
+  const { user } = useCurrentUser();
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
@@ -214,13 +216,15 @@ export function Sidebar({
             >
               <div className="flex items-center">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/01.png" alt="User" />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarImage src={"/avatars/" + (user?.employeeId ? user.employeeId.toLowerCase() + '.png' : '01.png')} alt={user?.name || 'User'} />
+                  <AvatarFallback>{(user?.name || 'U').charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 {!isCollapsed && (
                   <div className="ml-3 text-left">
-                    <p className="text-sm font-medium">User Name</p>
-                    <p className="text-xs text-muted-foreground">Admin</p>
+                    <p className="text-sm font-medium truncate max-w-[120px]">{user?.name || 'Loading...'}</p>
+                    <p className="text-xs text-muted-foreground truncate max-w-[120px]">
+                      {user?.role || 'User'}
+                    </p>
                   </div>
                 )}
               </div>
