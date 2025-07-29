@@ -10,6 +10,8 @@
   "login": {
     "title": "သင့်အကောင့်ဝင်ရန်",
     "subtitle": "သင့်အီးမေးလိပ်စာနှင့် စကားဝှက်ကိုရိုက်ထည့်ပြီး အကောင့်ဝင်ပါ",
+    "employeeId": "ဝန်ထမ်းအမှတ်",
+    "employeeIdPlaceholder": "ဝန်ထမ်းအမှတ်ထည့်ပါ",
     "email": "အီးမေးလိပ်စာ",
     "emailPlaceholder": "နမူနာ@example.com",
     "password": "စကားဝှက်",
@@ -22,6 +24,7 @@
     "noAccount": "အကောင့်မရှိပါသလား?",
     "signUp": "အကောင့်ဖွင့်ရန်",
     "errors": {
+      "employeeIdRequired": "ဝန်ထမ်းအမှတ်ဖြည့်ရန်လိုအပ်ပါသည်",
       "emailRequired": "အီးမေးလိပ်စာဖြည့်ရန်လိုအပ်ပါသည်",
       "invalidEmail": "သင့်အီးမေးလိပ်စာကို မှန်ကန်စွာရေးပေးပါ",
       "passwordRequired": "စကားဝှက်ဖြည့်ရန်လိုအပ်ပါသည်",
@@ -46,5 +49,25 @@
     },
     "currentLanguage": "သင်သည် မြန်မာဘာသာဖြင့် ကြည့်ရှုနေပါသည်",
     "languageNote": "ဘာသာစကားပြောင်းလိုပါက အပေါ်ဘားရှိ ဘာသာစကားပြောင်းခလုတ်ကို နှိပ်ပါ။"
+  },
+  "employees": {
+    "title": "ဝန်ထမ်းများ",
+    "addEmployee": "ဝန်ထမ်းအမှတ်ဖြည့်ရန်",
+    "employeeList": "ဝန်ထမ်းများစာရင်း",
+    "noEmployees": "ဝန်ထမ်းများစာရင်း မရှိပါ",
+    "loading": "Loading employees...",
+    "error": "Error loading employees",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this employee?",
+    "deleteSuccess": "Employee deleted successfully!",
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
+  },
+  "common": {
+    "edit": "ပြုပြင်မည်",
+    "delete": "ဖျက််မည်",
+    "confirmDelete": "ဖျက်ရန် သေချာပါသလား?",
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
   }
 }

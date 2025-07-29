@@ -1,0 +1,40 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/Users/thukha/MOT Projects/hr_management_system/logs/.51f555155c9eda1a7d7a5cb753317a8acc6931a4-audit.json",
+    "files": [
+        {
+            "date": 1753071967840,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-21.log",
+            "hash": "8dfaa6faeb08ce1c366e5e6ae5049c5bfc93ba4af2aef308d70f4b4c8361d29a"
+        },
+        {
+            "date": 1753152103930,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-22.log",
+            "hash": "aca894176b6d1ee5b34567e01d3941d20642c0842c1f7fcdff7c0fb34c2e3396"
+        },
+        {
+            "date": 1753242612856,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-23.log",
+            "hash": "c80a6df9395a89b0ab87649374b71e7cff1e6be9508ca28d4a2832a6daaa003a"
+        },
+        {
+            "date": 1753337386632,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-24.log",
+            "hash": "a3209183211aee70b111e25a43130df5dc35ae8a491a090c5b8074aadf5b4982"
+        },
+        {
+            "date": 1753688899794,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-28.log",
+            "hash": "a31effdd3a166704b5eb32f5d5256bed17261975adf02dfd1084a20a8a1cee90"
+        },
+        {
+            "date": 1753752571925,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/error-2025-07-29.log",
+            "hash": "5d82456c747749a311b470a707363b6f390274ad691f414af97bfc0eb2220414"
+        }
+    ],
+    "hashType": "sha256"
+}

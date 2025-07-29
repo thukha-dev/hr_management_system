@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-declare module 'next-themes' {
+declare module "next-themes" {
   export interface ThemeProviderProps {
     children: React.ReactNode;
     defaultTheme?: string;
@@ -15,7 +15,7 @@ declare module 'next-themes' {
   }
 
   export const ThemeProvider: React.ComponentType<ThemeProviderProps>;
-  
+
   export function useTheme(): {
     theme: string | undefined;
     setTheme: (theme: string) => void;
