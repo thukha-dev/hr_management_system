@@ -9,7 +9,9 @@
   },
   "login": {
     "title": "Sign in to your account",
-    "subtitle": "Enter your email and password to login to your account",
+    "subtitle": "Enter your employee id and password to login to your account",
+    "employeeId": "Employee ID",
+    "employeeIdPlaceholder": "Enter your employee ID",
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "password": "Password",
@@ -22,6 +24,7 @@
     "noAccount": "Don't have an account?",
     "signUp": "Sign up",
     "errors": {
+      "employeeIdRequired": "Employee ID is required",
       "emailRequired": "Email is required",
       "invalidEmail": "Please enter a valid email address",
       "passwordRequired": "Password is required",
@@ -46,5 +49,26 @@
     },
     "currentLanguage": "You are currently viewing in English",
     "languageNote": "Use the language switcher in the header to change the language."
+  },
+  "employees": {
+    "title": "Employees",
+    "addEmployee": "Add Employee",
+    "employeeList": "Employee List",
+    "noEmployees": "No employees found",
+    "loading": "Loading employees...",
+    "error": "Error loading employees",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this employee?",
+    "deleteSuccess": "Employee deleted successfully!",
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
+  },
+  "common": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this employee?",
+    "deleteSuccess": "Employee deleted successfully!",
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
   }
 }

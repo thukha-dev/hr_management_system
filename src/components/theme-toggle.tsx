@@ -25,9 +25,11 @@ export function ThemeToggle() {
   return (
     <div className="relative">
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className={`absolute inset-0 rounded-full transition-colors duration-300 ${
-          theme === 'light' ? 'bg-amber-100' : 'bg-slate-800'
-        }`} />
+        <div
+          className={`absolute inset-0 rounded-full transition-colors duration-300 ${
+            theme === "light" ? "bg-amber-100" : "bg-slate-800"
+          }`}
+        />
       </div>
       <Button
         variant="outline"
