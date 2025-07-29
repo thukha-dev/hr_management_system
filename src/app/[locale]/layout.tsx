@@ -1,5 +1,6 @@
 // src/app/[locale]/layout.tsx
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getMessages } from "next-intl/server";
@@ -33,18 +34,22 @@ export const metadata: Metadata = {
   },
 };
 
-interface Props {
-  children: React.ReactNode;
-  params: { locale: string };
-}
+// Define the props type for the layout component that matches Next.js 15's expected LayoutProps
+type RootLayoutProps = {
+  children: ReactNode;
+  params: Promise<{
+    locale: string;
+  }>;
+};
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
 // Root layout wraps every page with the i18n provider and fonts
-export default async function RootLayout({ children, params }: { children: React.ReactNode; params: { locale: string } }) {
-  const { locale } = params;
+export default async function RootLayout({ children, params }: RootLayoutProps) {
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
 
   // Redirect if unsupported locale
   if (!locales.includes(locale as any)) {

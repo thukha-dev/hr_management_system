@@ -26,12 +26,7 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // For API routes
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
+  // API configuration has been moved to route handlers in Next.js 15
 };
 
 export default withNextIntl(nextConfig);

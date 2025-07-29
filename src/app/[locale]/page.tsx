@@ -4,13 +4,14 @@ import { redirect } from "next/navigation";
 import { locales, defaultLocale, type Locale } from "@/i18n";
 
 type Props = {
-  params: {
+  params: Promise<{
     locale: Locale;
-  };
+  }>;
 };
-// ? params ကို await လုပ်ပေးရတယ်...အာ့မှ error မတက်မှာပါ
+
 export default async function Home({ params }: Props) {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
 
   if (!locales.includes(locale)) {
     redirect(`/${defaultLocale}`);
