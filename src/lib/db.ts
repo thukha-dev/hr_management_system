@@ -36,43 +36,6 @@ const mongooseOptions = {
   connectTimeoutMS: 10000,
 };
 
-// Function to test the connection
-async function testConnection() {
-  try {
-    logger.info("Attempting to connect to MongoDB...");
-    const testClient = await MongoClient.connect(uri, options);
-    await testClient.db().command({ ping: 1 });
-    logger.info("✅ MongoDB client connected successfully");
-    await testClient.close();
-    return true;
-  } catch (error) {
-    if (error instanceof MongoServerError) {
-      const errorMessage = `MongoDB Server Error (${error.codeName}): ${error.message}`;
-      logger.error(errorMessage);
-
-      if (error.codeName === "AuthenticationFailed") {
-        const authError =
-          "Authentication failed. Please check your MongoDB credentials.";
-        logger.error(authError);
-      } else if (error.codeName === "BadValue") {
-        const badValueError =
-          "Invalid connection string. Please check your MONGODB_URI.";
-        logger.error(badValueError);
-      }
-    } else if (error instanceof Error) {
-      logger.error(`Connection Error: ${error.message}`);
-
-      if (error.message.includes("ECONNREFUSED")) {
-        const connectionRefused =
-          "MongoDB server is not running or not accessible at the specified address.";
-        logger.error(connectionRefused);
-        logger.error(`Connection URI: ${uri}`);
-      }
-    }
-    return false;
-  }
-}
-
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable to preserve the connection across module reloads.
   const globalWithMongo = global as typeof globalThis & {
@@ -107,14 +70,10 @@ if (process.env.NODE_ENV === "development") {
     });
 }
 
-// Test the connection when this module is imported
-if (process.env.NODE_ENV !== "test") {
-  testConnection().catch(console.error);
-}
-
+// Connection is now handled by the main connection logic
 // MongoDB client connection
 export const db = {
-  connect: testConnection,
+  // Connection is now handled by the main connection logic
   client: clientPromise,
 };
 

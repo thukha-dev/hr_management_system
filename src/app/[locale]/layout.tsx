@@ -47,7 +47,10 @@ export async function generateStaticParams() {
 }
 
 // Root layout wraps every page with the i18n provider and fonts
-export default async function RootLayout({ children, params }: RootLayoutProps) {
+export default async function RootLayout({
+  children,
+  params,
+}: RootLayoutProps) {
   const resolvedParams = await params;
   const { locale } = resolvedParams;
 
