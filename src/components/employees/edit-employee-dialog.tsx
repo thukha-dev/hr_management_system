@@ -71,40 +71,74 @@ export function EditEmployeeDialog({
   onOpenChange,
   onSuccess,
 }: EditEmployeeDialogProps) {
+  // Safely extract employee data with defaults
+  const employeeData = employee || {
+    id: "",
+    name: "",
+    employeeId: "",
+    department: "",
+    position: "",
+    status: "active",
+    joinDate: new Date().toISOString(),
+    profilePhoto: "",
+    contactInfo: {
+      email: "",
+      phone: "",
+      address: "",
+    },
+  };
+
+  // Extract contact info with defaults
+  const contactInfo = employeeData.contactInfo || {
+    email: "",
+    phone: "",
+    address: "",
+  };
+
+  // State for form fields
+  const [name, setName] = useState(employeeData.name || "");
+  const [department, setDepartment] = useState(employeeData.department || "");
+  const [position, setPosition] = useState(employeeData.position || "");
+  const [status, setStatus] = useState(employeeData.status || "active");
   const [date, setDate] = useState<Date | undefined>(
-    employee ? new Date(employee.joinDate) : new Date(),
+    employeeData.joinDate ? new Date(employeeData.joinDate) : new Date(),
   );
-  // Map the status to a valid UserRole, defaulting to Employee if not found
+
+  // Helper function to get valid role from status
   const getValidRole = (status: string): UserRole => {
-    const role = Object.values(UserRole).find((role) => role === status);
-    return role || UserRole.Employee;
+    const role = Object.values(UserRole).find((r) => r === status);
+    return role || UserRole.Employee; // Using Employee instead of EMPLOYEE
   };
 
   const [role, setRole] = useState<UserRole>(
-    employee ? getValidRole(employee.status) : UserRole.Employee,
+    employeeData.status ? getValidRole(employeeData.status) : UserRole.Employee,
   );
-  const [previewUrl, setPreviewUrl] = useState<string>(
-    employee?.profilePhoto || "",
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    employeeData.profilePhoto || null,
   );
+  const [isPending, setIsPending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Contact info with unique variable names to avoid conflicts
+  const employeeEmail = contactInfo.email || "";
+  const employeePhone = contactInfo.phone || "";
+  const employeeAddress = contactInfo.address || "";
   const formRef = useRef<HTMLFormElement>(null);
+
   // Define the form state type
   interface FormState {
     success: boolean;
     message?: string;
-    errors?: {
-      _form?: string;
-      [key: string]: any;
-    };
+    errors?: Record<string, string>;
   }
 
-  const [state, setState] = useState<FormState>({
+  const [formState, setFormState] = useState<FormState>({
     success: false,
-    message: undefined,
+    message: "",
     errors: {},
   });
-  const [isPending, setIsPending] = useState(false);
 
   // Get contact info with fallbacks
   // const contactInfo = employee?.contactInfo || {};
@@ -122,14 +156,24 @@ export function EditEmployeeDialog({
       setPreviewUrl(employee.profilePhoto || "");
       setDate(employee.joinDate ? new Date(employee.joinDate) : new Date());
       setRole(getValidRole(employee.status));
-      setState({
+      setFormState({
         success: false,
-        message: undefined,
+        message: "",
         errors: {},
       });
       setIsSubmitted(false);
     }
   };
+
+  useEffect(() => {
+    if (isOpen && employee) {
+      setFormState({
+        success: false,
+        message: "",
+        errors: {},
+      });
+    }
+  }, [isOpen, employee]);
 
   useEffect(() => {
     if (employee) {
@@ -157,14 +201,14 @@ export function EditEmployeeDialog({
     }
   };
 
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!employee) return;
 
     setIsPending(true);
-    const formData = new FormData(event.currentTarget);
+    setFormState((prev) => ({ ...prev, success: false, message: "" }));
 
-    // Add the date and role to the form data
+    const formData = new FormData(e.currentTarget);
     if (date) {
       formData.set("joinDate", date.toISOString());
     }
@@ -173,33 +217,37 @@ export function EditEmployeeDialog({
     try {
       const result = await updateEmployee(employee.id, formData);
 
-      if (result?.success) {
-        setIsSubmitted(true);
-        onSuccess();
-
+      if (result.success) {
+        toast.success("Employee updated successfully!");
+        setFormState({
+          success: true,
+          message: "Employee updated successfully",
+        });
         // Close the dialog after 2 seconds
         setTimeout(() => {
-          onOpenChange(false);
-          setIsSubmitted(false);
+          onOpenChange?.(false);
+          onSuccess?.();
         }, 2000);
       } else {
-        const errorState: FormState = {
+        const errorMessage = result.message || "Failed to update employee";
+        toast.error(errorMessage);
+        setFormState({
           success: false,
-          message: result?.message || "Failed to update employee",
-          errors: {
-            _form: result?.message || "An error occurred",
-          },
-        };
-        setState(errorState);
+          message: errorMessage,
+          errors: { _form: errorMessage },
+        });
       }
+      return result;
     } catch (error) {
       console.error("Error updating employee:", error);
-      const errorState: FormState = {
+      const errorMessage = "An error occurred while updating the employee";
+      toast.error(errorMessage);
+      setFormState({
         success: false,
-        message: "An error occurred while updating the employee",
+        message: errorMessage,
         errors: { _form: "An unexpected error occurred. Please try again." },
-      };
-      setState(errorState);
+      });
+      return null;
     } finally {
       setIsPending(false);
     }
@@ -251,205 +299,92 @@ export function EditEmployeeDialog({
                 <Label htmlFor="name" className="text-right">
                   Full Name
                 </Label>
-                <Input
-                  id="name"
-                  name="name"
-                  defaultValue={employee.name}
-                  className="col-span-3"
-                  required
-                />
-                {state?.errors?.name && (
+                <Input id="name" className="col-span-3" required />
+                {formState.errors?.email && (
                   <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors?.name}
+                    {formState.errors?.email}
                   </p>
                 )}
               </div>
 
+              {/* Phone */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="department" className="text-right">
-                  Department
+                <Label htmlFor="phone" className="text-right">
+                  Phone
                 </Label>
                 <Input
-                  id="department"
-                  name="department"
-                  defaultValue={employee.department}
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  defaultValue={phone}
                   className="col-span-3"
-                  required
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="position" className="text-right">
-                  Position
+              {/* Address */}
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="address" className="text-right mt-2">
+                  Address
                 </Label>
-                <Input
-                  id="position"
-                  name="position"
-                  defaultValue={employee.position}
-                  className="col-span-3"
-                  required
+                <Textarea
+                  id="address"
+                  name="address"
+                  defaultValue={address}
+                  className="col-span-3 min-h-[100px]"
                 />
-              </div>
-
-              {/* Role */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className="text-right">
-                  Role
-                </Label>
-                <Select
-                  name="status"
-                  value={role}
-                  onValueChange={(value: UserRole) => setRole(value)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(UserRole).map((roleValue) => (
-                      <SelectItem key={roleValue} value={roleValue}>
-                        {roleValue.charAt(0).toUpperCase() +
-                          roleValue.slice(1).replace("_", " ")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Join Date */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Join Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "col-span-3 justify-start text-left font-normal",
-                        !date && "text-muted-foreground",
-                      )}
-                      type="button"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <input
-                  type="hidden"
-                  name="joinDate"
-                  value={date?.toISOString()}
-                />
-              </div>
-
-              {/* Contact Information */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Contact Information</h4>
-
-                {/* Email */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    defaultValue={email}
-                    className="col-span-3"
-                    required
-                  />
-                  {state?.errors?.email && (
-                    <p className="col-span-4 text-right text-sm text-destructive">
-                      {state.errors?.email}
-                    </p>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
-                    Phone
-                  </Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    defaultValue={phone}
-                    className="col-span-3"
-                  />
-                </div>
-
-                {/* Address */}
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label htmlFor="address" className="text-right mt-2">
-                    Address
-                  </Label>
-                  <Textarea
-                    id="address"
-                    name="address"
-                    defaultValue={address}
-                    className="col-span-3 min-h-[100px]"
-                  />
-                </div>
               </div>
 
               {/* Profile Photo */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="profilePhoto" className="text-right">
-                  Profile Photo
-                </Label>
-                <div className="col-span-3">
-                  <input
-                    type="file"
-                    id="profilePhoto"
-                    name="profilePhoto"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  {previewUrl ? (
-                    <div className="relative w-32 h-32 rounded-md overflow-hidden border">
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right mt-2">Profile Photo</Label>
+                <div className="col-span-3 space-y-2">
+                  {/* Image Preview */}
+                  {previewUrl && (
+                    <div className="relative w-24 h-24 mb-2">
                       <Image
                         src={previewUrl}
                         alt="Profile preview"
                         fill
-                        className="object-cover"
+                        className="rounded-md object-cover"
                       />
-                      <Button
+                      <button
                         type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 hover:bg-white/90"
                         onClick={handleRemoveImage}
+                        className="absolute -right-2 -top-2 bg-destructive text-white rounded-full p-1 hover:bg-destructive/90"
+                        aria-label="Remove image"
                       >
-                        <X className="h-4 w-4" />
-                      </Button>
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
-                  ) : (
-                    <label
-                      htmlFor="profilePhoto"
-                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                    >
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 mb-2 text-gray-500" />
-                        <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>{" "}
-                          or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          SVG, PNG, JPG or GIF (max. 2MB)
-                        </p>
-                      </div>
-                    </label>
                   )}
+
+                  {/* File Input */}
+                  <label
+                    htmlFor="profilePhoto"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-8 h-8 mb-2 text-gray-500" />
+                      <p className="mb-2 text-sm text-gray-500">
+                        <span className="font-semibold">
+                          {previewUrl ? "Change photo" : "Click to upload"}
+                        </span>{" "}
+                        or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG (MAX. 5MB)
+                      </p>
+                    </div>
+                    <input
+                      id="profilePhoto"
+                      name="profilePhoto"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      ref={fileInputRef}
+                    />
+                  </label>
                 </div>
               </div>
 

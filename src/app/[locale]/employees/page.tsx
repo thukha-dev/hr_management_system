@@ -10,6 +10,8 @@ import { deleteEmployee } from "@/app/actions/employee-actions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { toPlainObject } from "@/lib/utils";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +40,8 @@ export default function EmployeesPage() {
     null,
   );
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
   const t = useTranslations();
 
   // Define columns for the data table with proper typing
@@ -131,21 +135,15 @@ export default function EmployeesPage() {
                   {t("common.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => handleDelete(employee.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteClick(employee.id);
+                  }}
                   className="cursor-pointer text-red-600 focus:text-red-600"
                   disabled={isDeleting === employee.id}
                 >
-                  {isDeleting === employee.id ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("common.deleting")}
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {t("common.delete")}
-                    </>
-                  )}
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t("common.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -164,20 +162,33 @@ export default function EmployeesPage() {
       }
       const data = await response.json();
 
-      // Transform the data to match our Employee type
-      return data.map((emp: any) => ({
-        id: emp._id?.toString() || "",
-        employeeId: emp.employeeId || "",
-        name: emp.name || "",
-        contactInfo: emp.contactInfo || {},
-        department: emp.department || "",
-        position: emp.position || "",
-        status: emp.status || "active",
-        joinDate: emp.joinDate
-          ? new Date(emp.joinDate).toLocaleDateString()
-          : "",
-        profilePhoto: emp.profilePhoto,
-      }));
+      // Convert MongoDB documents to plain objects and transform the data
+      return data.map((emp: any) => {
+        // First convert to plain object to handle MongoDB specific types
+        const plainEmp = toPlainObject(emp);
+
+        // Then ensure the structure matches our Employee type
+        return {
+          id: plainEmp._id?.toString() || "",
+          employeeId: plainEmp.employeeId || "",
+          name: plainEmp.name || "",
+          email: plainEmp.contactInfo?.email || "",
+          phone: plainEmp.contactInfo?.phone || "",
+          address: plainEmp.contactInfo?.address || "",
+          department: plainEmp.department || "",
+          position: plainEmp.position || "",
+          status: plainEmp.status || "active",
+          joinDate: plainEmp.joinDate
+            ? new Date(plainEmp.joinDate).toISOString()
+            : new Date().toISOString(),
+          profilePhoto: plainEmp.profilePhoto || "",
+          contactInfo: {
+            email: plainEmp.contactInfo?.email || "",
+            phone: plainEmp.contactInfo?.phone || "",
+            address: plainEmp.contactInfo?.address || "",
+          },
+        };
+      });
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Failed to load employees");
@@ -201,7 +212,9 @@ export default function EmployeesPage() {
   }, []);
 
   const handleEdit = (employee: Employee) => {
-    setSelectedEmployee(employee);
+    // Ensure the employee data is a plain object before setting it to state
+    const plainEmployee = toPlainObject(employee);
+    setSelectedEmployee(plainEmployee);
     setIsEditDialogOpen(true);
   };
 
@@ -212,16 +225,23 @@ export default function EmployeesPage() {
     setSelectedEmployee(null);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm(t("employees.confirmDelete"))) return;
+  const handleDeleteClick = (id: string) => {
+    setEmployeeToDelete(id);
+    setDeleteDialogOpen(true);
+  };
 
-    setIsDeleting(id);
+  const handleDelete = async () => {
+    if (!employeeToDelete) return;
+
+    setIsDeleting(employeeToDelete);
     try {
-      const result = await deleteEmployee(id);
+      const result = await deleteEmployee(employeeToDelete);
 
       if (result.success) {
         // Update the UI by removing the deleted employee
-        setEmployees((prev) => prev.filter((emp) => emp.id !== id));
+        setEmployees((prev) =>
+          prev.filter((emp) => emp.id !== employeeToDelete),
+        );
         toast.success(t("employees.deleteSuccess"));
       } else {
         toast.error(result.message || t("employees.deleteError"));
@@ -231,6 +251,8 @@ export default function EmployeesPage() {
       toast.error(t("employees.deleteError"));
     } finally {
       setIsDeleting(null);
+      setEmployeeToDelete(null);
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -268,6 +290,18 @@ export default function EmployeesPage() {
           onSuccess={handleEditSuccess}
         />
       )}
+
+      <ConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title={t("employees.confirmDeleteTitle")}
+        description={t("employees.confirmDeleteMessage")}
+        confirmText={t("common.delete")}
+        cancelText={t("common.cancel")}
+        variant="destructive"
+        isLoading={isDeleting !== null}
+      />
     </div>
   );
 }

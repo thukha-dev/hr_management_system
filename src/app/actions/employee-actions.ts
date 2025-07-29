@@ -40,10 +40,33 @@ type UpdateEmployeeData = {
   joinDate?: string;
 };
 
+type UpdateEmployeeResponse = {
+  success: boolean;
+  message?: string;
+  data?: {
+    _id: string;
+    employeeId: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    department: string;
+    position: string;
+    status: string;
+    joinDate: string;
+    profilePhoto?: string;
+    contactInfo: {
+      email: string;
+      phone: string;
+      address: string;
+    };
+  };
+};
+
 export async function updateEmployee(
   id: string,
   formData: FormData,
-): Promise<{ success: boolean; message?: string }> {
+): Promise<UpdateEmployeeResponse> {
   try {
     // Extract form data
     const name = formData.get("name") as string;
@@ -56,30 +79,65 @@ export async function updateEmployee(
     // Connect to database
     await connectDB();
 
-    // Find and update the employee
-    const updatedEmployee = await User.findByIdAndUpdate(
-      id,
-      {
-        name,
-        "contactInfo.email": email,
-        department,
-        position,
-        status: status || "active",
-        ...(joinDate && { joinDate: new Date(joinDate) }),
-      },
-      { new: true },
-    );
+    // Prepare update data
+    const updateData = {
+      name,
+      "contactInfo.email": email,
+      department,
+      position,
+      status: status || "active",
+      ...(joinDate && { joinDate: new Date(joinDate) }),
+    };
 
-    if (!updatedEmployee) {
+    // Find and update the employee
+    const updatedEmployeeDoc = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedEmployeeDoc) {
       return { success: false, message: "Employee not found" };
     }
 
-    // Revalidate the employees page to show updated data
-    revalidatePath("/employees");
+    // Revalidate the employees page to show the updated data
+    revalidatePath("/[locale]/employees", "page");
+
+    // Convert the updated employee to a plain object
+    const updatedEmployee = await User.findById(id).lean().exec();
+
+    if (!updatedEmployee) {
+      return {
+        success: false,
+        message: "Employee not found after update",
+      };
+    }
+
+    // Type assertion to handle the MongoDB document
+    const employeeDoc = updatedEmployee as any;
+
+    // Create a plain object with only the fields we need
+    const plainEmployee = {
+      _id: employeeDoc._id?.toString() || "",
+      employeeId: employeeDoc.employeeId || "",
+      name: employeeDoc.name || "",
+      email: employeeDoc.contactInfo?.email || "",
+      phone: employeeDoc.contactInfo?.phone || "",
+      address: employeeDoc.contactInfo?.address || "",
+      department: employeeDoc.department || "",
+      position: employeeDoc.position || "",
+      status: employeeDoc.status || "active",
+      joinDate: employeeDoc.joinDate?.toISOString() || new Date().toISOString(),
+      profilePhoto: employeeDoc.profilePhoto || "",
+      contactInfo: {
+        email: employeeDoc.contactInfo?.email || "",
+        phone: employeeDoc.contactInfo?.phone || "",
+        address: employeeDoc.contactInfo?.address || "",
+      },
+    };
 
     return {
       success: true,
       message: "Employee updated successfully",
+      data: plainEmployee,
     };
   } catch (error) {
     console.error("Error updating employee:", error);
@@ -269,13 +327,33 @@ export async function addEmployee(
       // Revalidate the employees page
       revalidatePath("/[locale]/employees", "page");
 
+      // Convert the MongoDB document to a plain object
+      const plainEmployee = {
+        _id: newEmployee._id?.toString(),
+        employeeId: newEmployee.employeeId,
+        name: newEmployee.name,
+        email: newEmployee.contactInfo?.email,
+        phone: newEmployee.contactInfo?.phone,
+        address: newEmployee.contactInfo?.address,
+        department: newEmployee.department,
+        position: newEmployee.position,
+        status: newEmployee.status,
+        joinDate: newEmployee.joinDate?.toISOString(),
+        profilePhoto: newEmployee.profilePhoto,
+        contactInfo: {
+          email: newEmployee.contactInfo?.email,
+          phone: newEmployee.contactInfo?.phone,
+          address: newEmployee.contactInfo?.address,
+        },
+      };
+
       return {
         success: true,
         message: "Employee added successfully",
         data: {
-          id: newEmployee._id,
-          employeeId: newEmployee.employeeId,
-          name: newEmployee.name,
+          id: plainEmployee._id,
+          employeeId: plainEmployee.employeeId,
+          name: plainEmployee.name,
         },
       };
     } catch (error: any) {

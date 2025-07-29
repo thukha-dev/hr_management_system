@@ -56,12 +56,18 @@
     "employeeList": "ဝန်ထမ်းများစာရင်း",
     "noEmployees": "ဝန်ထမ်းများစာရင်း မရှိပါ",
     "loading": "Loading employees...",
-    "error": "Error loading employees"
+    "error": "Error loading employees",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this employee?",
+    "deleteSuccess": "Employee deleted successfully!",
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
   },
   "common": {
     "edit": "ပြုပြင်မည်",
     "delete": "ဖျက််မည်",
     "confirmDelete": "ဖျက်ရန် သေချာပါသလား?",
-    "deleteError": "Failed to delete employee"
+    "deleteError": "Failed to delete employee",
+    "cancel": "Cancel"
   }
 }

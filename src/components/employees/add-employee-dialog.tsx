@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { useState, useRef, ChangeEvent } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { addEmployee } from "@/app/actions/employee-actions";
@@ -43,6 +41,7 @@ import {
 } from "@/components/ui/select";
 import { UserRole } from "@/types/auth";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface AddEmployeeDialogProps {
   onSuccess?: () => void;
@@ -52,8 +51,8 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [role, setRole] = useState<UserRole>(UserRole.Employee);
-  const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -130,6 +129,7 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
     try {
       const result = await addEmployee(prevState, formData);
       if (result.success) {
+        toast.success("Employee added successfully!");
         setOpen(false);
         setDate(new Date());
         setRole(UserRole.Employee);
@@ -138,10 +138,17 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
           fileInputRef.current.value = "";
         }
         onSuccess?.();
+      } else {
+        toast.error(
+          result.message || "Failed to add employee. Please try again.",
+        );
       }
       return result;
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error(
+        "An error occurred while adding the employee. Please try again.",
+      );
       return {
         success: false,
         message: "An error occurred while submitting the form",
@@ -387,11 +394,34 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
               </div>
 
               {/* Profile Photo */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="profilePhoto" className="text-right">
-                  Profile Photo
-                </Label>
-                <div className="col-span-3">
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right mt-2">Profile Photo</Label>
+                <div className="col-span-3 space-y-2">
+                  {/* Image Preview */}
+                  {previewUrl && (
+                    <div className="relative w-24 h-24 mb-2">
+                      <Image
+                        src={previewUrl}
+                        alt="Profile preview"
+                        fill
+                        className="rounded-md object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreviewUrl(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                        className="absolute -right-2 -top-2 bg-destructive text-white rounded-full p-1 hover:bg-destructive/90"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* File Input */}
                   <label
                     htmlFor="profilePhoto"
                     className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
@@ -399,7 +429,9 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="w-8 h-8 mb-2 text-gray-500" />
                       <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span>{" "}
+                        <span className="font-semibold">
+                          {previewUrl ? "Change photo" : "Click to upload"}
+                        </span>{" "}
                         or drag and drop
                       </p>
                       <p className="text-xs text-gray-500">
@@ -412,14 +444,25 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
                       type="file"
                       className="hidden"
                       accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setPreviewUrl(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      ref={fileInputRef}
                     />
                   </label>
+                  {state?.errors?.profilePhoto && (
+                    <p className="text-right text-sm text-destructive">
+                      {state.errors.profilePhoto}
+                    </p>
+                  )}
                 </div>
-                {state?.errors?.profilePhoto && (
-                  <p className="col-span-4 text-right text-sm text-destructive">
-                    {state.errors.profilePhoto}
-                  </p>
-                )}
               </div>
 
               {/* Password */}
