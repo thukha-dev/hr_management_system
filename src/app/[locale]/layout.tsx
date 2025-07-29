@@ -43,8 +43,8 @@ export async function generateStaticParams() {
 }
 
 // Root layout wraps every page with the i18n provider and fonts
-export default async function RootLayout({ children, params }: Props) {
-  const { locale } = await params;
+export default async function RootLayout({ children, params }: { children: React.ReactNode; params: { locale: string } }) {
+  const { locale } = params;
 
   // Redirect if unsupported locale
   if (!locales.includes(locale as any)) {
