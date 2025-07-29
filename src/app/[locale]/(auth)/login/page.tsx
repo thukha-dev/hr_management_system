@@ -128,13 +128,21 @@ const createLoginAction = (t: any) => {
 export default function LoginPage() {
   const t = useTranslations();
   const router = useRouter();
-  const [state, formAction] = useActionState(
-    createLoginAction(t),
-    initialFormState,
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction] = useActionState(
+    async (prevState: any, formData: FormData) => {
+      setIsLoading(true);
+      try {
+        const result = await createLoginAction(t)(prevState, formData);
+        return result;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    initialFormState,
+  );
 
   useEffect(() => {
     if (state.message === t("login.success")) {
@@ -146,13 +154,7 @@ export default function LoginPage() {
     }
   }, [state, router, t]);
 
-  useEffect(() => {
-    setIsLoading(
-      !!state.message &&
-        state.message !== "" &&
-        state.message !== t("login.success"),
-    );
-  }, [state]);
+  // Remove the useEffect that sets isLoading based on state.message
 
   return (
     <div className="flex flex-col items-center justify-center dark:bg-black p-6 sm:p-8 transition-colors duration-300">
@@ -208,7 +210,7 @@ export default function LoginPage() {
                 placeholder={t("login.employeeIdPlaceholder")}
                 required
                 defaultValue={state.values?.employeeId}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-input/30 dark:text-white ${
                   state.errors?.employeeId
                     ? "border-red-500"
                     : "border-slate-300 dark:border-slate-600"
@@ -243,7 +245,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder={t("login.passwordPlaceholder")}
                   required
-                  className={`w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800 dark:text-white ${
+                  className={`w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-input/30 dark:text-white ${
                     state.errors?.password
                       ? "border-red-500"
                       : "border-slate-300 dark:border-slate-600"

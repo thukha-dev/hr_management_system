@@ -114,6 +114,13 @@ export function EditEmployeeDialog({
     employeeData.status ? getValidRole(employeeData.status) : UserRole.Employee,
   );
 
+  const [open, setOpen] = useState(isOpen);
+
+  // Sync the internal state with the external state
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     employeeData.profilePhoto || null,
   );
@@ -149,9 +156,10 @@ export function EditEmployeeDialog({
   console.log("employee is --- ", employee);
 
   // Handle dialog open/close state changes
-  const handleOpenChange = (open: boolean) => {
-    onOpenChange(open);
-    if (!open && employee) {
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    onOpenChange?.(newOpen);
+    if (!newOpen && employee) {
       formRef.current?.reset();
       setPreviewUrl(employee.profilePhoto || "");
       setDate(employee.joinDate ? new Date(employee.joinDate) : new Date());
@@ -166,14 +174,14 @@ export function EditEmployeeDialog({
   };
 
   useEffect(() => {
-    if (isOpen && employee) {
+    if (open && employee) {
       setFormState({
         success: false,
         message: "",
         errors: {},
       });
     }
-  }, [isOpen, employee]);
+  }, [open, employee]);
 
   useEffect(() => {
     if (employee) {
@@ -256,7 +264,7 @@ export function EditEmployeeDialog({
   if (!employee) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         {isSubmitted ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">

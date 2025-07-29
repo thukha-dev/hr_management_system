@@ -12,12 +12,21 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { toPlainObject } from "@/lib/utils";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Define the Employee type
 type Employee = {
@@ -32,8 +41,44 @@ type Employee = {
   profilePhoto?: string;
 };
 
+// Skeleton row component
+function SkeletonRow() {
+  return (
+    <TableRow>
+      <TableCell className="py-4">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-20" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-24" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-20" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-16" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-20" />
+      </TableCell>
+      <TableCell className="text-right">
+        <Skeleton className="h-8 w-8 ml-auto" />
+      </TableCell>
+    </TableRow>
+  );
+}
+
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
@@ -200,11 +245,14 @@ export default function EmployeesPage() {
   useEffect(() => {
     const loadEmployees = async () => {
       try {
+        setIsLoading(true);
         const data = await fetchEmployees();
         setEmployees(data);
       } catch (error) {
         console.error("Error loading employees:", error);
         toast.error("Failed to load employees");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -260,21 +308,48 @@ export default function EmployeesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Employees</h1>
-        {/* <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Add Employee
-        </Button> */}
+        </Button>
       </div>
 
-      <div className="rounded-md border">
-        <EmployeeDataTable
-          columns={columns}
-          data={employees}
-          searchKey="name"
-        />
-      </div>
+      {isLoading ? (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Employee ID</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Position</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Join Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <SkeletonRow key={`skeleton-${i}`} />
+                ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <div className="rounded-md border">
+          <EmployeeDataTable
+            columns={columns}
+            data={employees}
+            searchKey="name"
+          />
+        </div>
+      )}
 
       <AddEmployeeDialog
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
         onSuccess={() => {
           setIsAddDialogOpen(false);
           // Refresh the employee list after a successful add
@@ -287,7 +362,11 @@ export default function EmployeesPage() {
           employee={selectedEmployee}
           isOpen={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
-          onSuccess={handleEditSuccess}
+          onSuccess={() => {
+            setIsEditDialogOpen(false);
+            // Refresh the employee list after a successful edit
+            fetchEmployees().then((data) => setEmployees(data));
+          }}
         />
       )}
 

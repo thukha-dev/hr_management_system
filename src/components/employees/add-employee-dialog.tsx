@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { addEmployee } from "@/app/actions/employee-actions";
 import { Button } from "@/components/ui/button";
@@ -44,11 +44,27 @@ import Image from "next/image";
 import { toast } from "sonner";
 
 interface AddEmployeeDialogProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddEmployeeDialog({
+  isOpen = false,
+  onOpenChange,
+  onSuccess,
+}: AddEmployeeDialogProps) {
+  const [open, setOpen] = useState(isOpen);
+
+  // Sync the internal state with the external state
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    onOpenChange?.(newOpen);
+  };
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [role, setRole] = useState<UserRole>(UserRole.Employee);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -161,7 +177,7 @@ export function AddEmployeeDialog({ onSuccess }: AddEmployeeDialogProps) {
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
-        setOpen(isOpen);
+        handleOpenChange(isOpen);
         if (!isOpen) {
           // Reset form when dialog is closed
           formRef.current?.reset();

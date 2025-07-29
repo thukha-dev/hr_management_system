@@ -30,7 +30,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           isOpen={sidebarOpen}
           isCollapsed={isCollapsed}
           onClose={() => setSidebarOpen(false)}
-          activePath={typeof window !== 'undefined' ? window.location.pathname : '/'}
+          activePath={
+            typeof window !== "undefined" ? window.location.pathname : "/"
+          }
         />
 
         {/* Main content */}
