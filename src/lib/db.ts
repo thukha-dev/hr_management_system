@@ -1,5 +1,5 @@
 import { MongoClient, MongoClientOptions, MongoServerError } from "mongodb";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import logger from "./logger";
 
 if (!process.env.MONGODB_URI) {
@@ -51,10 +51,12 @@ async function testConnection() {
       logger.error(errorMessage);
 
       if (error.codeName === "AuthenticationFailed") {
-        const authError = "Authentication failed. Please check your MongoDB credentials.";
+        const authError =
+          "Authentication failed. Please check your MongoDB credentials.";
         logger.error(authError);
       } else if (error.codeName === "BadValue") {
-        const badValueError = "Invalid connection string. Please check your MONGODB_URI.";
+        const badValueError =
+          "Invalid connection string. Please check your MONGODB_URI.";
         logger.error(badValueError);
       }
     } else if (error instanceof Error) {
@@ -123,14 +125,14 @@ export async function connectDB() {
   }
 
   if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined in environment variables');
+    throw new Error("MONGODB_URI is not defined in environment variables");
   }
 
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    logger.info('MongoDB connected via Mongoose');
+    logger.info("MongoDB connected via Mongoose");
   } catch (error) {
-    logger.error('MongoDB connection error:', error);
+    logger.error("MongoDB connection error:", error);
     throw error;
   }
 }
@@ -139,19 +141,19 @@ export async function connectDB() {
 const connectMongoose = async () => {
   // If already connected, use existing connection
   if (mongoose.connection.readyState >= 1) {
-    logger.info('Using existing database connection');
+    logger.info("Using existing database connection");
     return;
   }
 
   try {
-    logger.info('Creating new database connection with Mongoose...');
+    logger.info("Creating new database connection with Mongoose...");
     await mongoose.connect(uri, mongooseOptions);
-    logger.info('✅ MongoDB connected via Mongoose');
+    logger.info("✅ MongoDB connected via Mongoose");
   } catch (error) {
     if (error instanceof Error) {
-      logger.error('MongoDB connection error:', error.message);
+      logger.error("MongoDB connection error:", error.message);
     } else {
-      logger.error('Unknown MongoDB connection error');
+      logger.error("Unknown MongoDB connection error");
     }
     // Exit process with failure
     process.exit(1);
@@ -159,13 +161,13 @@ const connectMongoose = async () => {
 };
 
 // Handle application termination
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   try {
     await mongoose.connection.close();
-    logger.info('MongoDB connection closed through app termination');
+    logger.info("MongoDB connection closed through app termination");
     process.exit(0);
   } catch (error) {
-    logger.error('Error closing MongoDB connection:', error);
+    logger.error("Error closing MongoDB connection:", error);
     process.exit(1);
   }
 });
@@ -180,6 +182,8 @@ export default {
   mongoose,
   // Export the existing db object for backward compatibility
   ...Object.fromEntries(
-    Object.entries(db).filter(([key]) => key !== 'client' && key !== 'mongoose')
-  )
+    Object.entries(db).filter(
+      ([key]) => key !== "client" && key !== "mongoose",
+    ),
+  ),
 };

@@ -15,7 +15,7 @@ const excludedPaths = [
   "/favicon.ico",
   "/images",
   "/avatars",
-  "/assets"
+  "/assets",
 ];
 
 // Define protected routes with required roles
@@ -43,9 +43,9 @@ const intlMiddleware = createIntlMiddleware({
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);
-  
+
   // Skip middleware for static files and excluded paths
-  if (excludedPaths.some(path => pathname.startsWith(path))) {
+  if (excludedPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   images: {
-    domains: [],
+    domains: ["res.cloudinary.com"],
   },
 
   typescript: {
@@ -22,14 +22,14 @@ const nextConfig: NextConfig = {
   // Increase the maximum allowed request body size for Server Actions (default is 1MB)
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb', // Increase to 10MB for file uploads
+      bodySizeLimit: "10mb", // Increase to 10MB for file uploads
     },
   },
 
   // For API routes
   api: {
     bodyParser: {
-      sizeLimit: '10mb',
+      sizeLimit: "10mb",
     },
   },
 };

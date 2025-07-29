@@ -2,9 +2,11 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeDataTable } from "@/components/employees/employee-data-table";
-import { Plus, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Plus, MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { AddEmployeeDialog } from "@/components/employees/add-employee-dialog";
+import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
+import { deleteEmployee } from "@/app/actions/employee-actions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,11 @@ type Employee = {
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const t = useTranslations();
 
   // Define columns for the data table with proper typing
@@ -40,7 +47,8 @@ export default function EmployeesPage() {
       header: "Name",
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
-        const avatar = row.original.profilePhoto || "/avatars/default-avatar.png";
+        const avatar =
+          row.original.profilePhoto || "/avatars/default-avatar.png";
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
@@ -49,7 +57,8 @@ export default function EmployeesPage() {
                 alt={name}
                 className="h-full w-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/avatars/default-avatar.png";
+                  (e.target as HTMLImageElement).src =
+                    "/avatars/default-avatar.png";
                 }}
               />
             </div>
@@ -114,18 +123,29 @@ export default function EmployeesPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() => handleEdit(employee.id)}
+                  onClick={() => handleEdit(employee)}
                   className="cursor-pointer"
+                  disabled={isDeleting === employee.id}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {t("common.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handleDelete(employee.id)}
                   className="cursor-pointer text-red-600 focus:text-red-600"
+                  disabled={isDeleting === employee.id}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {isDeleting === employee.id ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("common.deleting")}
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("common.delete")}
+                    </>
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -149,7 +169,7 @@ export default function EmployeesPage() {
         id: emp._id?.toString() || "",
         employeeId: emp.employeeId || "",
         name: emp.name || "",
-        email: emp.contactInfo?.email || "",
+        contactInfo: emp.contactInfo || {},
         department: emp.department || "",
         position: emp.position || "",
         status: emp.status || "active",
@@ -180,24 +200,37 @@ export default function EmployeesPage() {
     loadEmployees();
   }, []);
 
-  const handleEdit = (id: string) => {
-    console.log("Edit employee:", id);
-    toast.info("Edit functionality will be implemented soon");
+  const handleEdit = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    // Refresh the employee list after a successful edit
+    fetchEmployees().then((data) => setEmployees(data));
+    setIsEditDialogOpen(false);
+    setSelectedEmployee(null);
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      try {
-        // Here you would typically make an API call to delete the employee
-        // await fetch(`/api/employees/${id}`, { method: 'DELETE' });
+    if (!window.confirm(t("employees.confirmDelete"))) return;
 
-        // For now, we'll just update the UI
+    setIsDeleting(id);
+    try {
+      const result = await deleteEmployee(id);
+
+      if (result.success) {
+        // Update the UI by removing the deleted employee
         setEmployees((prev) => prev.filter((emp) => emp.id !== id));
-        toast.success("Employee deleted successfully");
-      } catch (error) {
-        console.error("Error deleting employee:", error);
-        toast.error("Failed to delete employee");
+        toast.success(t("employees.deleteSuccess"));
+      } else {
+        toast.error(result.message || t("employees.deleteError"));
       }
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      toast.error(t("employees.deleteError"));
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -205,10 +238,10 @@ export default function EmployeesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Employees</h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        {/* <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Add Employee
-        </Button>
+        </Button> */}
       </div>
 
       <div className="rounded-md border">
@@ -219,13 +252,22 @@ export default function EmployeesPage() {
         />
       </div>
 
-      <AddEmployeeDialog 
+      <AddEmployeeDialog
         onSuccess={() => {
           setIsAddDialogOpen(false);
           // Refresh the employee list after a successful add
-          fetchEmployees().then(data => setEmployees(data));
-        }} 
+          fetchEmployees().then((data) => setEmployees(data));
+        }}
       />
+
+      {selectedEmployee && (
+        <EditEmployeeDialog
+          employee={selectedEmployee}
+          isOpen={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </div>
   );
 }

@@ -57,5 +57,11 @@
     "noEmployees": "ဝန်ထမ်းများစာရင်း မရှိပါ",
     "loading": "Loading employees...",
     "error": "Error loading employees"
+  },
+  "common": {
+    "edit": "ပြုပြင်မည်",
+    "delete": "ဖျက််မည်",
+    "confirmDelete": "ဖျက်ရန် သေချာပါသလား?",
+    "deleteError": "Failed to delete employee"
   }
 }
