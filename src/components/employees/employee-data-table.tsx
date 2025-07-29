@@ -34,23 +34,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
 
-interface EmployeeDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface EmployeeDataTableProps<TData> {
+  columns: ColumnDef<TData>[];
   data: TData[];
   searchKey: string;
 }
 
-export function EmployeeDataTable<TData, TValue>({
+export function EmployeeDataTable<TData>({
   columns,
   data,
   searchKey,
-}: EmployeeDataTableProps<TData, TValue>) {
+}: EmployeeDataTableProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
@@ -82,7 +80,7 @@ export function EmployeeDataTable<TData, TValue>({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={`Search ${searchKey}...`}
+              placeholder={`Search by ${searchKey}...`}
               value={
                 (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
               }

@@ -49,5 +49,13 @@
     },
     "currentLanguage": "You are currently viewing in English",
     "languageNote": "Use the language switcher in the header to change the language."
+  },
+  "employees": {
+    "title": "Employees",
+    "addEmployee": "Add Employee",
+    "employeeList": "Employee List",
+    "noEmployees": "No employees found",
+    "loading": "Loading employees...",
+    "error": "Error loading employees"
   }
 }

@@ -49,5 +49,13 @@
     },
     "currentLanguage": "သင်သည် မြန်မာဘာသာဖြင့် ကြည့်ရှုနေပါသည်",
     "languageNote": "ဘာသာစကားပြောင်းလိုပါက အပေါ်ဘားရှိ ဘာသာစကားပြောင်းခလုတ်ကို နှိပ်ပါ။"
+  },
+  "employees": {
+    "title": "ဝန်ထမ်းများ",
+    "addEmployee": "ဝန်ထမ်းအမှတ်ဖြည့်ရန်",
+    "employeeList": "ဝန်ထမ်းများစာရင်း",
+    "noEmployees": "ဝန်ထမ်းများစာရင်း မရှိပါ",
+    "loading": "Loading employees...",
+    "error": "Error loading employees"
   }
 }

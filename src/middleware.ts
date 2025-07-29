@@ -9,6 +9,15 @@ import logger from "./lib/logger";
 // Define public routes (no auth required)
 const publicRoutes = ["/login", "/register", "/api/auth", "/api/auth/logout"];
 
+// Define paths that should be excluded from middleware processing
+const excludedPaths = [
+  "/_next",
+  "/favicon.ico",
+  "/images",
+  "/avatars",
+  "/assets"
+];
+
 // Define protected routes with required roles
 const protectedRoutes = [
   {
@@ -34,7 +43,12 @@ const intlMiddleware = createIntlMiddleware({
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);
-  console.log("request: ", request);
+  
+  // Skip middleware for static files and excluded paths
+  if (excludedPaths.some(path => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
   console.log(`[Middleware] Path: ${pathname}`);
   console.log(`[Middleware] request url: ${request.url}`);
   const token = request.cookies.get("auth_token")?.value;
