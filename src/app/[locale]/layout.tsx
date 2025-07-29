@@ -33,10 +33,10 @@ export const metadata: Metadata = {
   },
 };
 
-type Props = {
+interface Props {
   children: React.ReactNode;
   params: { locale: string };
-};
+}
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
