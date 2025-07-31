@@ -216,14 +216,26 @@ export function Sidebar({
             >
               <div className="flex items-center">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={"/avatars/" + (user?.employeeId ? user.employeeId.toLowerCase() + '.png' : '01.png')} alt={user?.name || 'User'} />
-                  <AvatarFallback>{(user?.name || 'U').charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarImage
+                    src={
+                      "/avatars/" +
+                      (user?.employeeId
+                        ? user.employeeId.toLowerCase() + ".png"
+                        : "01.png")
+                    }
+                    alt={user?.name || "User"}
+                  />
+                  <AvatarFallback>
+                    {(user?.name || "U").charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 {!isCollapsed && (
                   <div className="ml-3 text-left">
-                    <p className="text-sm font-medium truncate max-w-[120px]">{user?.name || 'Loading...'}</p>
+                    <p className="text-sm font-medium truncate max-w-[120px]">
+                      {user?.name || "Loading..."}
+                    </p>
                     <p className="text-xs text-muted-foreground truncate max-w-[120px]">
-                      {user?.role || 'User'}
+                      {user?.role || "User"}
                     </p>
                   </div>
                 )}

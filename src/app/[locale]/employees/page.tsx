@@ -7,6 +7,7 @@ import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { AddEmployeeDialog } from "@/components/employees/add-employee-dialog";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
+import { ImportEmployeesDialog } from "@/components/employees/import-employees-dialog";
 import { deleteEmployee } from "@/app/actions/employee-actions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -82,6 +83,7 @@ export default function EmployeesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
@@ -313,10 +315,21 @@ export default function EmployeesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Employees</h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Employee
-        </Button>
+        <div className="flex items-center gap-2">
+          <ImportEmployeesDialog
+            isOpen={isImportDialogOpen}
+            onOpenChange={setIsImportDialogOpen}
+            onSuccess={() => {
+              setIsImportDialogOpen(false);
+              // Refresh the employee list after a successful import
+              fetchEmployees().then((data) => setEmployees(data));
+            }}
+          />
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Employee
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

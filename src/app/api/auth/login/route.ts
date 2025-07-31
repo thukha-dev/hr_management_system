@@ -89,8 +89,8 @@ export async function POST(request: Request) {
     const response = NextResponse.json(
       {
         message: "Login successful",
-        user: { 
-          id: user._id, 
+        user: {
+          id: user._id,
           employeeId: user.employeeId,
           name: user.name,
           role: user.role,
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
           email: user.email,
           phone: user.phone,
           address: user.address,
-          profilePhoto: user.profilePhoto
+          profilePhoto: user.profilePhoto,
         },
       },
       { status: 200 },

@@ -21,12 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  CheckCircle2,
-  Loader2,
-  Upload,
-  X,
-} from "lucide-react";
+import { CheckCircle2, Loader2, Upload, X } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -279,7 +274,12 @@ export function EditEmployeeDialog({
             </p>
           </div>
         ) : (
-          <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4" noValidate>
+          <form
+            ref={formRef}
+            onSubmit={handleFormSubmit}
+            className="space-y-4"
+            noValidate
+          >
             <DialogHeader className="text-center">
               <DialogTitle className="text-xl font-bold">
                 Edit Employee
@@ -292,7 +292,10 @@ export function EditEmployeeDialog({
             <div className="space-y-4">
               {/* Employee ID */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="employeeId" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="employeeId"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Employee ID
                 </Label>
                 <div className="sm:col-span-3">
@@ -308,16 +311,19 @@ export function EditEmployeeDialog({
 
               {/* Name */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="name" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="name"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Full Name
                 </Label>
                 <div className="sm:col-span-3">
-                  <Input 
-                    id="name" 
+                  <Input
+                    id="name"
                     name="name"
                     defaultValue={employee.name}
-                    className="w-full" 
-                    required 
+                    className="w-full"
+                    required
                   />
                   {formState.errors?.name && (
                     <p className="text-sm text-destructive mt-1">
@@ -329,7 +335,10 @@ export function EditEmployeeDialog({
 
               {/* Email */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="email" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="email"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Email
                 </Label>
                 <div className="sm:col-span-3">
@@ -351,7 +360,9 @@ export function EditEmployeeDialog({
 
               {/* Join Date */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label className="text-left sm:text-right sm:pt-2">Join Date</Label>
+                <Label className="text-left sm:text-right sm:pt-2">
+                  Join Date
+                </Label>
                 <div className="sm:col-span-3">
                   <Popover>
                     <PopoverTrigger asChild>
@@ -385,7 +396,10 @@ export function EditEmployeeDialog({
 
               {/* Department */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="department" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="department"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Department
                 </Label>
                 <div className="sm:col-span-3">
@@ -406,7 +420,10 @@ export function EditEmployeeDialog({
 
               {/* Position */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="position" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="position"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Position
                 </Label>
                 <div className="sm:col-span-3">
@@ -427,7 +444,10 @@ export function EditEmployeeDialog({
 
               {/* Role */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="role" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="role"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Role
                 </Label>
                 <div className="sm:col-span-3">
@@ -442,7 +462,8 @@ export function EditEmployeeDialog({
                     <SelectContent>
                       {Object.values(UserRole).map((roleValue) => (
                         <SelectItem key={roleValue} value={roleValue}>
-                          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
+                          {roleValue.charAt(0).toUpperCase() +
+                            roleValue.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -452,7 +473,10 @@ export function EditEmployeeDialog({
 
               {/* Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="phone" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="phone"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Phone
                 </Label>
                 <div className="sm:col-span-3">
@@ -474,7 +498,10 @@ export function EditEmployeeDialog({
 
               {/* Address */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="address" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="address"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Address
                 </Label>
                 <div className="sm:col-span-3">
@@ -495,7 +522,9 @@ export function EditEmployeeDialog({
 
               {/* Profile Photo */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label className="text-left sm:text-right sm:pt-2">Profile Photo</Label>
+                <Label className="text-left sm:text-right sm:pt-2">
+                  Profile Photo
+                </Label>
                 <div className="sm:col-span-3 space-y-2">
                   {/* Image Preview */}
                   {previewUrl && (
@@ -560,8 +589,8 @@ export function EditEmployeeDialog({
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isPending}
                   className="w-full sm:w-auto"
                 >

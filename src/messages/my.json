@@ -61,7 +61,25 @@
     "confirmDeleteMessage": "Are you sure you want to delete this employee?",
     "deleteSuccess": "Employee deleted successfully!",
     "deleteError": "Failed to delete employee",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "import": {
+      "title": "ဝန်ထမ်းများ Import လုပ်ရန်",
+      "description": "ဝန်ထမ်းများကို တစ်ခါတည်း Import လုပ်ရန် CSV သို့မဟုတ် Excel ဖိုင်ကို ထည့်သွင်းပါ။",
+      "templateHelp": "ပုံစံနဲ့ပတ်သက်ပြီး အကူအညီလိုပါသလား? နမူနာပုံစံကို ဒေါင်းလုဒ်လုပ်ပါ။",
+      "downloadTemplate": "ပုံစံဒေါင်းလုဒ်",
+      "selectFile": "ဖိုင်ရွေးချယ်ပါ",
+      "importButton": "Import လုပ်ရန်",
+      "importing": "Import လုပ်နေပါသည်...",
+      "cancel": "ပယ်ဖျက်ရန်",
+      "validationErrors": "အတည်ပြုချက်အမှားများ",
+      "importSuccess": "ဝန်ထမ်း {count} ယောက်ကို အောင်မြင်စွာ Import လုပ်ပါသည်",
+      "importFailed": "Import လုပ်ရာတွင် မအောင်မြင်ပါ",
+      "noFileSelected": "Import လုပ်ရန် ဖိုင်ရွေးချယ်ပါ",
+      "invalidFileType": "CSV သို့မဟုတ် Excel ဖိုင်မှန်ကန်တာကို ရွေးချယ်ပါ",
+      "fileTooLarge": "ဖိုင်အရွယ်အစားသည် 5MB ထက်နည်းရပါမည်",
+      "noDataFound": "ဖိုင်တွင် အချက်အလက်မတွေ့ရပါ",
+      "validationFailed": "အတည်ပြုချက်အမှား {count} ခုဖြင့် မအောင်မြင်ပါ"
+    }
   },
   "common": {
     "edit": "ပြုပြင်မည်",

@@ -61,7 +61,25 @@
     "confirmDeleteMessage": "Are you sure you want to delete this employee?",
     "deleteSuccess": "Employee deleted successfully!",
     "deleteError": "Failed to delete employee",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "import": {
+      "title": "Import Employees",
+      "description": "Upload a CSV or Excel file to import multiple employees at once.",
+      "templateHelp": "Need help with the format? Download our sample template.",
+      "downloadTemplate": "Download Template",
+      "selectFile": "Select File",
+      "importButton": "Import",
+      "importing": "Importing...",
+      "cancel": "Cancel",
+      "validationErrors": "Validation Errors",
+      "importSuccess": "Successfully imported {count} employees",
+      "importFailed": "Import failed",
+      "noFileSelected": "Please select a file to import",
+      "invalidFileType": "Please select a valid CSV or Excel file",
+      "fileTooLarge": "File size must be less than 5MB",
+      "noDataFound": "No data found in file",
+      "validationFailed": "Validation failed with {count} errors"
+    }
   },
   "common": {
     "edit": "Edit",

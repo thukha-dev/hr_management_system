@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface User {
   id: string;
@@ -19,7 +19,7 @@ export function useCurrentUser() {
     const fetchUser = async () => {
       try {
         // First check localStorage (for remember me)
-        const storedUser = localStorage.getItem('user');
+        const storedUser = localStorage.getItem("user");
         if (storedUser) {
           setUser(JSON.parse(storedUser));
           setLoading(false);
@@ -27,7 +27,7 @@ export function useCurrentUser() {
         }
 
         // Then check sessionStorage
-        const sessionUser = sessionStorage.getItem('user');
+        const sessionUser = sessionStorage.getItem("user");
         if (sessionUser) {
           setUser(JSON.parse(sessionUser));
           setLoading(false);
@@ -35,13 +35,13 @@ export function useCurrentUser() {
         }
 
         // If no user in storage, fetch from API
-        const response = await fetch('/api/auth/me');
+        const response = await fetch("/api/auth/me");
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }

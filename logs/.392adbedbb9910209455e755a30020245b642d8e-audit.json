@@ -34,6 +34,11 @@
             "date": 1753752572489,
             "name": "/Users/thukha/MOT Projects/hr_management_system/logs/log-2025-07-29.log",
             "hash": "2ba31a05512a83bf3fe3a7a12028e217cba63ff3132b3ccbad4171ef7f56ffb8"
+        },
+        {
+            "date": 1753943294541,
+            "name": "/Users/thukha/MOT Projects/hr_management_system/logs/log-2025-07-31.log",
+            "hash": "6586827c44638e9e0e18372247e53c63be64977196abf4d73518996aa8e6910a"
         }
     ],
     "hashType": "sha256"

@@ -227,7 +227,10 @@ export function AddEmployeeDialog({
             <div className="space-y-3">
               {/* Employee ID */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="employeeId" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="employeeId"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Employee ID
                 </Label>
                 <div className="sm:col-span-3">
@@ -248,7 +251,10 @@ export function AddEmployeeDialog({
 
               {/* Name */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="name" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="name"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Full Name
                 </Label>
                 <div className="sm:col-span-3">
@@ -263,7 +269,9 @@ export function AddEmployeeDialog({
 
               {/* Join Date */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label className="text-left sm:text-right sm:pt-2">Join Date</Label>
+                <Label className="text-left sm:text-right sm:pt-2">
+                  Join Date
+                </Label>
                 <div className="sm:col-span-3">
                   <Popover>
                     <PopoverTrigger asChild>
@@ -297,7 +305,10 @@ export function AddEmployeeDialog({
 
               {/* Department */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="department" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="department"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Department
                 </Label>
                 <div className="sm:col-span-3">
@@ -317,7 +328,10 @@ export function AddEmployeeDialog({
 
               {/* Position */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="position" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="position"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Position
                 </Label>
                 <div className="sm:col-span-3">
@@ -337,7 +351,10 @@ export function AddEmployeeDialog({
 
               {/* Role */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="role" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="role"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Role
                 </Label>
                 <div className="sm:col-span-3">
@@ -352,7 +369,8 @@ export function AddEmployeeDialog({
                     <SelectContent>
                       {Object.values(UserRole).map((roleValue) => (
                         <SelectItem key={roleValue} value={roleValue}>
-                          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
+                          {roleValue.charAt(0).toUpperCase() +
+                            roleValue.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -366,7 +384,10 @@ export function AddEmployeeDialog({
 
                 {/* Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                  <Label htmlFor="email" className="text-left sm:text-right sm:pt-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-left sm:text-right sm:pt-2"
+                  >
                     Email
                   </Label>
                   <div className="sm:col-span-3">
@@ -387,7 +408,10 @@ export function AddEmployeeDialog({
 
                 {/* Phone */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                  <Label htmlFor="phone" className="text-left sm:text-right sm:pt-2">
+                  <Label
+                    htmlFor="phone"
+                    className="text-left sm:text-right sm:pt-2"
+                  >
                     Phone
                   </Label>
                   <div className="sm:col-span-3">
@@ -408,7 +432,10 @@ export function AddEmployeeDialog({
 
                 {/* Address */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                  <Label htmlFor="address" className="text-left sm:text-right sm:pt-2">
+                  <Label
+                    htmlFor="address"
+                    className="text-left sm:text-right sm:pt-2"
+                  >
                     Address
                   </Label>
                   <div className="sm:col-span-3">
@@ -429,7 +456,9 @@ export function AddEmployeeDialog({
 
               {/* Profile Photo */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label className="text-left sm:text-right sm:pt-2">Profile Photo</Label>
+                <Label className="text-left sm:text-right sm:pt-2">
+                  Profile Photo
+                </Label>
                 <div className="sm:col-span-3 space-y-2">
                   {/* Image Preview */}
                   {previewUrl && (
@@ -503,7 +532,10 @@ export function AddEmployeeDialog({
 
               {/* Password */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Label htmlFor="password" className="text-left sm:text-right sm:pt-2">
+                <Label
+                  htmlFor="password"
+                  className="text-left sm:text-right sm:pt-2"
+                >
                   Password
                 </Label>
                 <div className="sm:col-span-3">
@@ -523,18 +555,18 @@ export function AddEmployeeDialog({
                 </div>
               </div>
             </div>
-            
+
             <DialogFooter className="sm:justify-start">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setOpen(false)}
                 className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isPending}
                 className="w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2"
               >
@@ -543,7 +575,9 @@ export function AddEmployeeDialog({
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Saving...
                   </>
-                ) : 'Save'}
+                ) : (
+                  "Save"
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -562,7 +596,9 @@ function SubmitButton() {
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Saving...
         </>
-      ) : 'Save'}
+      ) : (
+        "Save"
+      )}
     </Button>
   );
 }
