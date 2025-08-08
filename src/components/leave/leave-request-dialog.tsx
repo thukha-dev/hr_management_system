@@ -55,30 +55,39 @@ const leaveTypes = [
   { value: "paternity", label: "Paternity Leave" },
 ] as const;
 
-const formSchema = z.object({
-  leaveType: z.string().min(1, "Please select a leave type"),
-  leaveDate: z.date(),
-  halfDay: z.enum(["morning", "evening"]).optional(),
-  reason: z.string().min(10, "Please provide a reason (min 10 characters)"),
-}).refine((data) => {
-  if (!data.leaveDate) {
-    return false;
-  }
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return data.leaveDate >= today;
-}, {
-  message: "Leave date is required and cannot be in the past",
-  path: ["leaveDate"],
-}).refine((data) => {
-  if (data.leaveType === 'unpaid') {
-    return data.halfDay !== undefined;
-  }
-  return true;
-}, {
-  message: "Please select morning or evening",
-  path: ["halfDay"],
-});
+const formSchema = z
+  .object({
+    leaveType: z.string().min(1, "Please select a leave type"),
+    leaveDate: z.date(),
+    halfDay: z.enum(["morning", "evening"]).optional(),
+    reason: z.string().min(10, "Please provide a reason (min 10 characters)"),
+  })
+  .refine(
+    (data) => {
+      if (!data.leaveDate) {
+        return false;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return data.leaveDate >= today;
+    },
+    {
+      message: "Leave date is required and cannot be in the past",
+      path: ["leaveDate"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.leaveType === "unpaid") {
+        return data.halfDay !== undefined;
+      }
+      return true;
+    },
+    {
+      message: "Please select morning or evening",
+      path: ["halfDay"],
+    },
+  );
 
 type LeaveRequestFormValues = z.infer<typeof formSchema>;
 
@@ -118,16 +127,22 @@ export function LeaveRequestDialog({
             Fill out the form to submit a new leave request.
           </DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="leaveType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Leave Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select leave type" />
@@ -160,7 +175,7 @@ export function LeaveRequestDialog({
                             variant={"outline"}
                             className={cn(
                               "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             {field.value ? (
@@ -189,7 +204,8 @@ export function LeaveRequestDialog({
                 )}
               />
 
-              {(watchLeaveType === 'half-unpaid' || watchLeaveType === 'unpaid') && (
+              {(watchLeaveType === "half-unpaid" ||
+                watchLeaveType === "unpaid") && (
                 <FormField
                   control={form.control}
                   name="halfDay"
@@ -203,25 +219,37 @@ export function LeaveRequestDialog({
                           className="grid grid-cols-2 gap-4"
                         >
                           <div>
-                            <RadioGroupItem value="morning" id="morning" className="peer sr-only" />
+                            <RadioGroupItem
+                              value="morning"
+                              id="morning"
+                              className="peer sr-only"
+                            />
                             <Label
                               htmlFor="morning"
                               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                             >
                               <Sun className="mb-2 h-6 w-6" />
                               <span>Morning</span>
-                              <span className="text-sm text-muted-foreground">(9:00 AM - 1:00 PM)</span>
+                              <span className="text-sm text-muted-foreground">
+                                (9:00 AM - 1:00 PM)
+                              </span>
                             </Label>
                           </div>
                           <div>
-                            <RadioGroupItem value="evening" id="evening" className="peer sr-only" />
+                            <RadioGroupItem
+                              value="evening"
+                              id="evening"
+                              className="peer sr-only"
+                            />
                             <Label
                               htmlFor="evening"
                               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                             >
                               <Moon className="mb-2 h-6 w-6" />
                               <span>Evening</span>
-                              <span className="text-sm text-muted-foreground">(2:00 PM - 6:00 PM)</span>
+                              <span className="text-sm text-muted-foreground">
+                                (2:00 PM - 6:00 PM)
+                              </span>
                             </Label>
                           </div>
                         </RadioGroup>
@@ -255,7 +283,11 @@ export function LeaveRequestDialog({
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit">Submit Request</Button>
