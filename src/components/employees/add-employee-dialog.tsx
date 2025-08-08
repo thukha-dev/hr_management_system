@@ -291,7 +291,7 @@ export function AddEmployeeDialog({
                         mode="single"
                         selected={date}
                         onSelect={setDate}
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

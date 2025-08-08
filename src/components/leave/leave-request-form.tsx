@@ -81,7 +81,7 @@ export function LeaveRequestForm() {
                     mode="single"
                     selected={form.date}
                     onSelect={handleDateSelect}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>
