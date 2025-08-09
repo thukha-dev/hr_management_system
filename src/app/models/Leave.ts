@@ -1,11 +1,5 @@
-import {
-  prop as Property,
-  getModelForClass,
-  modelOptions,
-  DocumentType,
-  Ref,
-} from "@typegoose/typegoose";
-import mongoose, { Schema, Document, Types } from "mongoose";
+import { DocumentType, Ref } from "@typegoose/typegoose";
+import mongoose, { Schema, Document } from "mongoose";
 import { UserDocument } from "./User";
 
 export type LeaveDocument = DocumentType<ILeave> & Document;

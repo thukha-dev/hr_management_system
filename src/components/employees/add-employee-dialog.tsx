@@ -249,6 +249,35 @@ export function AddEmployeeDialog({
                 </div>
               </div>
 
+              {/* NRC */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label
+                  htmlFor="nrc"
+                  className="text-left sm:text-right sm:pt-2"
+                >
+                  NRC Number
+                </Label>
+                <div className="sm:col-span-3">
+                  <Input
+                    id="nrc"
+                    name="nrc"
+                    className="w-full"
+                    placeholder="12/ABC(N)123456"
+                    pattern="^[0-9]{1,2}\/[A-Za-z]+\([A-Za-z]\)[0-9]{6}$"
+                    title="Please enter a valid NRC format (e.g., 12/ABC(N)123456)"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Format: 12/ABC(N)123456
+                  </p>
+                  {state?.errors?.nrc && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.nrc}
+                    </p>
+                  )}
+                </div>
+              </div>
+
               {/* Name */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
                 <Label
@@ -375,6 +404,32 @@ export function AddEmployeeDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              {/* Work Location */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4">
+                <Label
+                  htmlFor="workLocation"
+                  className="text-left sm:text-right sm:pt-2"
+                >
+                  Work Location
+                </Label>
+                <div className="sm:col-span-3">
+                  <Select name="workLocation" defaultValue="OFFICE" required>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select work location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="OFFICE">Office</SelectItem>
+                      <SelectItem value="WFH">Work From Home</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {state?.errors?.workLocation && (
+                    <p className="text-sm text-destructive mt-1">
+                      {state.errors.workLocation}
+                    </p>
+                  )}
                 </div>
               </div>
 

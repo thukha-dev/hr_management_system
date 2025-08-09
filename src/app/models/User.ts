@@ -1,14 +1,6 @@
-import {
-  prop as Property,
-  getModelForClass,
-  modelOptions,
-  DocumentType,
-} from "@typegoose/typegoose";
-import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import { DocumentType } from "@typegoose/typegoose";
 import mongoose, { Schema, Document } from "mongoose";
-import { UserRole, UserRoleType } from "@/types/auth";
-
-export type UserDocument = DocumentType<IUser> & Document;
+import { UserRoleType } from "@/types/auth";
 
 export interface ContactInfo {
   phone?: string;
@@ -17,24 +9,37 @@ export interface ContactInfo {
   [key: string]: any;
 }
 
-export interface IUser extends Document {
+export interface IUser {
   employeeId: string;
   name: string;
+  nrc: string;
   joinDate: Date;
   department: string;
   position: string;
   contactInfo: ContactInfo;
   profilePhoto: string;
   role: UserRoleType;
+  workLocation: "OFFICE" | "WFH";
   password: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
+export type UserDocument = DocumentType<IUser> & Document;
+
 const UserSchema: Schema = new Schema<IUser>(
   {
     employeeId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
+    nrc: {
+      type: String,
+      required: true,
+      unique: true,
+      match: [
+        /^[0-9]\/[A-Za-z]+?\([A-Za-z]\)[0-9]{6}$/,
+        "Please provide a valid NRC format (e.g., 12/ABC(N)123456)",
+      ],
+    },
     joinDate: { type: Date, required: true },
     department: { type: String, required: true },
     position: { type: String, required: true },
@@ -46,6 +51,12 @@ const UserSchema: Schema = new Schema<IUser>(
     },
     profilePhoto: { type: String },
     role: { type: String, default: "Employee", required: true },
+    workLocation: {
+      type: String,
+      enum: ["OFFICE", "WFH"],
+      default: "OFFICE",
+      required: true,
+    },
     password: { type: String, required: true, select: false },
   },
   { timestamps: true },

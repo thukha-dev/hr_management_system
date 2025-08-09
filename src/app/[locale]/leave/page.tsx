@@ -183,7 +183,7 @@ export default function LeavePage() {
         <Tabs defaultValue="my-leave" className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border-b">
             <div className="w-full overflow-x-auto pb-2 sm:pb-0">
-              <TabsList className="w-full sm:w-auto grid grid-cols-2 sm:grid-cols-5 min-w-max">
+              <TabsList className="w-full sm:w-auto inline-flex min-w-max">
                 <TabsTrigger value="my-leave">My Leave</TabsTrigger>
                 <TabsTrigger value="pending">Pending</TabsTrigger>
                 <TabsTrigger value="approved">Approved</TabsTrigger>
