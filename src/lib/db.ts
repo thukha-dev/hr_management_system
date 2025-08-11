@@ -2,6 +2,11 @@ import { MongoClient, MongoClientOptions, MongoServerError } from "mongodb";
 import mongoose from "mongoose";
 import logger from "./logger";
 
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
+
 if (!process.env.MONGODB_URI) {
   const error = new Error("Please add your Mongo URI to .env.local");
   logger.error(error.message);
@@ -43,15 +48,17 @@ if (process.env.NODE_ENV === "development") {
   };
 
   if (!globalWithMongo._mongoClientPromise) {
-    console.log("Creating new MongoDB connection...");
+    logger.info("Creating new MongoDB connection...");
     globalWithMongo._mongoClientPromise = client
       .connect()
       .then((connectedClient) => {
-        console.log("✅ MongoDB client connected successfully");
+        logger.info("MongoDB client connected successfully");
         return connectedClient;
       })
-      .catch((error) => {
-        console.error("❌ Failed to connect to MongoDB:", error);
+      .catch((error: MongoServerError) => {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        logger.error({ error: errorMessage }, "Failed to connect to MongoDB");
         throw error;
       });
   }
@@ -61,11 +68,16 @@ if (process.env.NODE_ENV === "development") {
   clientPromise = client
     .connect()
     .then((connectedClient) => {
-      console.log("✅ MongoDB client connected successfully in production");
+      logger.info("MongoDB client connected successfully in production");
       return connectedClient;
     })
-    .catch((error) => {
-      console.error("❌ Failed to connect to MongoDB in production:", error);
+    .catch((error: MongoServerError) => {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      logger.error(
+        { error: errorMessage },
+        "Failed to connect to MongoDB in production",
+      );
       throw error;
     });
 }
@@ -88,16 +100,21 @@ export async function connectDB() {
   }
 
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    logger.info("MongoDB connected via Mongoose");
-  } catch (error) {
-    logger.error("MongoDB connection error:", error);
+    if (!process.env.MONGODB_URI) {
+      throw new Error("MONGODB_URI is not defined");
+    }
+    await mongoose.connect(process.env.MONGODB_URI, mongooseOptions);
+    logger.info("test", "MongoDB connected via Mongoose");
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    logger.error({ error: errorMessage }, "MongoDB connection error");
     throw error;
   }
 }
 
 // Connect to MongoDB with Mongoose
-const connectMongoose = async () => {
+const connectMongoose = async (): Promise<void> => {
   // If already connected, use existing connection
   if (mongoose.connection.readyState >= 1) {
     logger.info("Using existing database connection");
@@ -107,14 +124,11 @@ const connectMongoose = async () => {
   try {
     logger.info("Creating new database connection with Mongoose...");
     await mongoose.connect(uri, mongooseOptions);
-    logger.info("✅ MongoDB connected via Mongoose");
-  } catch (error) {
-    if (error instanceof Error) {
-      logger.error("MongoDB connection error:", error.message);
-    } else {
-      logger.error("Unknown MongoDB connection error");
-    }
-    // Exit process with failure
+    logger.info("MongoDB connected via Mongoose");
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    logger.error({ error: errorMessage }, "MongoDB connection error");
     process.exit(1);
   }
 };

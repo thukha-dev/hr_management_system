@@ -408,16 +408,20 @@ export async function POST(
         await unlink(tempPath);
       } catch (cleanupError) {
         // Ignore cleanup errors as they don't affect the import result
-        console.warn("Failed to cleanup temporary file:", cleanupError);
         logger.warn(
-          `Failed to cleanup temporary file ${tempPath}: ${cleanupError}`,
+          { error: cleanupError, tempPath },
+          "Failed to cleanup temporary file after import",
         );
       }
     }
   } catch (error) {
-    console.error("Import error:", error);
     logger.error(
-      `Import error: ${error instanceof Error ? error.message : String(error)}`,
+      {
+        error,
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined,
+      },
+      "Failed to import employees",
     );
 
     let errorMessage =

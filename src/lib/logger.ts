@@ -1,5 +1,5 @@
-import winston from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
+import pino from "pino";
+import pinoPretty from "pino-pretty";
 import path from "path";
 import fs from "fs";
 
@@ -12,70 +12,60 @@ if (!fs.existsSync(logDir)) {
   console.log(`Created logs directory at: ${logDir}`);
 }
 
-// Custom format for log files
-const fileFormat = winston.format.printf(({ level, message, timestamp }) => {
-  return `${level.toUpperCase()} - ${timestamp} --> ${message}`;
+// Common log format for console
+const prettyPrint = pinoPretty({
+  colorize: true,
+  translateTime: "SYS:standard",
+  ignore: "pid,hostname",
+  messageFormat: "{time} --> {msg}",
 });
 
-// Daily Rotate Transport for combined logs
-const combinedTransport = new DailyRotateFile({
-  filename: "log-%DATE%.log",
-  dirname: logDir,
-  datePattern: "YYYY-MM-DD",
-  zippedArchive: false,
-  maxSize: "20m",
-  maxFiles: "14d",
-  level: "info",
-  createSymlink: true,
-  symlinkName: "current.log",
-});
-
-// Daily Rotate Transport for error logs
-const errorTransport = new DailyRotateFile({
-  filename: "error-%DATE%.log",
-  dirname: logDir,
-  datePattern: "YYYY-MM-DD",
-  zippedArchive: false,
-  maxSize: "20m",
-  maxFiles: "30d",
-  level: "error",
-  createSymlink: true,
-  symlinkName: "error.log",
-});
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    winston.format.errors({ stack: true }),
-    fileFormat,
-  ),
-  defaultMeta: { service: "hr-management-system" },
-  transports: [
-    // Write all logs with level `error` and below to `error.log`
-    errorTransport,
-    // Write all logs with level `info` and below to `combined.log`
-    combinedTransport,
-  ],
-});
-
-// If we're not in production, also log to the console with colors
-if (process.env.NODE_ENV !== "production") {
-  const consoleFormat = winston.format.printf(
-    ({ level, message, timestamp }) => {
-      return `${level.toUpperCase()} - ${timestamp} --> ${message}`;
+// Create the logger instance
+const logger = pino(
+  {
+    level: process.env.NODE_ENV === "production" ? "info" : "debug",
+    timestamp: () => `,"time":"${new Date().toISOString()}"`,
+    formatters: {
+      level: (label) => ({ level: label.toUpperCase() }),
     },
-  );
+    // timestamp: pino.stdTimeFunctions.isoTime,
+  },
+  pino.multistream([
+    // Console output in development, pretty print
+    {
+      level: "debug",
+      stream: prettyPrint,
+    },
+    // File output for all logs
+    {
+      level: "info",
+      stream: pino.destination({
+        dest: path.join(logDir, "combined.log"),
+        sync: false,
+        mkdir: true,
+      }),
+    },
+    // Error logs to separate file
+    {
+      level: "error",
+      stream: pino.destination({
+        dest: path.join(logDir, "error.log"),
+        sync: false,
+        mkdir: true,
+      }),
+    },
+  ]),
+);
 
-  logger.add(
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        consoleFormat,
-      ),
-    }),
-  );
-}
+// Log unhandled exceptions
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught Exception");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error({ err: reason, promise }, "Unhandled Rejection");
+  process.exit(1);
+});
 
 export default logger;
