@@ -209,9 +209,9 @@ export async function addEmployee(
 
     // Contact info validation
     const trimmedEmail = email?.trim();
-    if (!trimmedEmail) {
+    if (!email || !email.trim()) {
       errors.email = "Email is required";
-    } else if (!isValidEmail(trimmedEmail)) {
+    } else if (!isValidEmail(email.trim())) {
       errors.email = "Please enter a valid email address";
     }
 

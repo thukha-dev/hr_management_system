@@ -1,71 +1,52 @@
-import pino from "pino";
-import pinoPretty from "pino-pretty";
-import path from "path";
-import fs from "fs";
+// Edge-compatible logger that works in both Node.js and Edge runtimes
 
-// Log directory
-const logDir = path.join(process.cwd(), "logs");
-
-// Create logs directory if it doesn't exist
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
-  console.log(`Created logs directory at: ${logDir}`);
-}
-
-// Common log format for console
-const prettyPrint = pinoPretty({
-  colorize: true,
-  translateTime: "SYS:standard",
-  ignore: "pid,hostname",
-  messageFormat: "{time} --> {msg}",
-});
-
-// Create the logger instance
-const logger = pino(
-  {
-    level: process.env.NODE_ENV === "production" ? "info" : "debug",
-    timestamp: () => `,"time":"${new Date().toISOString()}"`,
-    formatters: {
-      level: (label) => ({ level: label.toUpperCase() }),
-    },
-    // timestamp: pino.stdTimeFunctions.isoTime,
+// Simple console logger that works in both environments
+const logger = {
+  // Debug level - only shown in development
+  debug: (message: string, data?: any) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.debug(
+        `[DEBUG] ${new Date().toISOString()} --> ${message}`,
+        data || "",
+      );
+    }
   },
-  pino.multistream([
-    // Console output in development, pretty print
-    {
-      level: "debug",
-      stream: prettyPrint,
-    },
-    // File output for all logs
-    {
-      level: "info",
-      stream: pino.destination({
-        dest: path.join(logDir, "combined.log"),
-        sync: false,
-        mkdir: true,
-      }),
-    },
-    // Error logs to separate file
-    {
-      level: "error",
-      stream: pino.destination({
-        dest: path.join(logDir, "error.log"),
-        sync: false,
-        mkdir: true,
-      }),
-    },
-  ]),
-);
 
-// Log unhandled exceptions
-process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught Exception");
-  process.exit(1);
-});
+  // Info level - general operational logs
+  info: (message: string, data?: any) => {
+    console.info(
+      `[INFO] ${new Date().toISOString()} --> ${message}`,
+      data || "",
+    );
+  },
 
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error({ err: reason, promise }, "Unhandled Rejection");
-  process.exit(1);
-});
+  // Warning level - handled exceptions or other issues
+  warn: (message: string, data?: any) => {
+    console.warn(
+      `[WARN] ${new Date().toISOString()} --> ${message}`,
+      data || "",
+    );
+  },
+
+  // Error level - failed operations
+  error: (message: string | Error, error?: any) => {
+    if (message instanceof Error) {
+      console.error(
+        `[ERROR] ${new Date().toISOString()} -->`,
+        message,
+        error || "",
+      );
+    } else {
+      console.error(
+        `[ERROR] ${new Date().toISOString()} --> ${message}`,
+        error || "",
+      );
+    }
+  },
+};
+
+// Note: Process event handlers are removed for Edge Runtime compatibility
+// In a production environment, consider handling these at the platform level
+// or using a service like Sentry for error tracking
 
 export default logger;

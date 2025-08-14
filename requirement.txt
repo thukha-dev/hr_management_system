@@ -1,0 +1,19 @@
+1. WFH/Office	Radio selection: “Work From Home” or “Office”
+2. Join Month	Month only (for internal HR metrics)
+3. Join Date	Full date (DD/MM/YYYY)
+4. Marital Status	Dropdown: e.g., Single, Married
+5. NRC	NRC number
+6. Salary (Probation)	Monthly salary during probation period
+7. Salary (After Probation)	Monthly salary after probation ends
+8. Birth Month	For birthday tracking or benefits
+9. Real Birth Date	Actual birth date
+10. NRC Birth Date	Birth date as per NRC
+11. Bank Account	Dropdown list of available banks
+12. Account Number	Employee’s personal bank account number
+13. Email	Personal or company email
+14. Contact Number	Primary phone number
+15. Parent Contact Number	For emergency contact
+16. Current Address	Currently living address
+17. Permanent Address Home address
+18. Contract Date	Start date of the current contract
+19. Contract By	Name of person (Admin/HR) who signed or issued the contract

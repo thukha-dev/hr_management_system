@@ -49,11 +49,11 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  console.log(`[Middleware] Path: ${pathname}`);
-  console.log(`[Middleware] request url: ${request.url}`);
+  logger.info(`[Middleware] Path: ${pathname}`);
+  logger.info(`[Middleware] request url: ${request.url}`);
   const token = request.cookies.get("auth_token")?.value;
   const user = token ? await getUserFromToken(token) : null;
-  console.log("user is --- ", user);
+  logger.info("user is --- ", user);
 
   // Extract locale and path without locale
   const pathSegments = pathname.split("/").filter(Boolean);
@@ -71,28 +71,18 @@ export default async function middleware(request: NextRequest) {
       pathWithoutLocale.startsWith(`/${route}/`),
   );
 
-  console.log(
+  logger.info(
     `[Middleware] Path without locale: ${pathWithoutLocale}, isPublic: ${isPublicRoute}`,
   );
 
   // Get the authentication token from cookies
   const authToken = request.cookies.get("auth_token")?.value;
-  console.log(`[Middleware] Auth token exists: ${!!authToken}`);
-
-  // Handle unauthenticated users trying to access protected routes
-  // if (!authToken && !isPublicRoute) {
-  //   const currentLocale = pathLocale || defaultLocale;
-  //   const loginUrl = new URL(`/${currentLocale}/login`, request.url);
-  //   console.log(
-  //     `[Middleware] Unauthenticated user, redirecting to: ${loginUrl}`
-  //   );
-  //   return NextResponse.redirect(loginUrl);
-  // }
+  logger.info(`[Middleware] Auth token exists: ${!!authToken}`);
 
   if (authToken) {
-    console.log("[Middleware] User is authenticated, checking path...");
-    console.log(`[Middleware] Available locales: ${locales}`);
-    console.log(
+    logger.info("[Middleware] User is authenticated, checking path...");
+    logger.info(`[Middleware] Available locales: ${locales}`);
+    logger.info(
       `[Middleware] Path: ${pathname}, Path without locale: ${pathWithoutLocale}`,
     );
 
@@ -105,8 +95,8 @@ export default async function middleware(request: NextRequest) {
       pathWithoutLocale.startsWith("/login/") ||
       pathWithoutLocale.startsWith("/register/")
     ) {
-      console.log(`[Middleware] Redirecting to ${currentLocale}/dashboard`);
-      console.log(
+      logger.info(`[Middleware] Redirecting to ${currentLocale}/dashboard`);
+      logger.info(
         `[Middleware] redirect route`,
         new URL(`/${currentLocale}/dashboard`, request.url),
       );
@@ -128,7 +118,7 @@ export default async function middleware(request: NextRequest) {
       pathWithoutLocale.startsWith(`${route.path}/`),
   );
 
-  console.log(
+  logger.info(
     "[Middleware] Matched route:",
     matchedRoute ? matchedRoute.path : "none",
   );
@@ -138,7 +128,7 @@ export default async function middleware(request: NextRequest) {
     if (!authToken) {
       const currentLocale = pathLocale || defaultLocale;
       const loginUrl = new URL(`/${currentLocale}/login`, request.url);
-      console.log(
+      logger.info(
         `[Middleware] Unauthenticated user, redirecting to: ${loginUrl}`,
       );
       return NextResponse.redirect(loginUrl);
@@ -152,7 +142,7 @@ export default async function middleware(request: NextRequest) {
       matchedRoute.roles.some((role) => user?.role === role);
 
     if (!hasRequiredRole) {
-      console.warn(`[Middleware] Unauthorized access to ${pathname}`);
+      logger.warn(`[Middleware] Unauthorized access to ${pathname}`);
       return NextResponse.redirect(
         new URL(`/${pathLocale || defaultLocale}/unauthorized`, request.url),
       );

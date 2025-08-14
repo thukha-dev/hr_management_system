@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
+import logger from "./logger";
 
 // Configure Cloudinary with environment variables
 cloudinary.config({
@@ -31,7 +32,7 @@ export async function uploadImage(file: File): Promise<string> {
 
     return result.secure_url;
   } catch (error: unknown) {
-    console.error("Error in uploadImage:", error);
+    logger.error("Error in uploadImage:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
     throw new Error(`Failed to upload image: ${errorMessage}`);

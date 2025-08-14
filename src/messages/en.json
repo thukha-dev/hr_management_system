@@ -34,8 +34,46 @@
     },
     "success": "Login successful!"
   },
+  "Employees": {
+    "title": "Employees",
+    "actions": {
+      "addEmployee": "Add Employee",
+      "import": "Import",
+      "importEmployees": "Import Employees"
+    },
+    "table": {
+      "headers": {
+        "name": "Name",
+        "employeeId": "Employee ID",
+        "department": "Department",
+        "position": "Position",
+        "status": "Status",
+        "joinDate": "Join Date",
+        "actions": "Actions"
+      },
+      "noResults": "No employees found"
+    },
+    "deleteDialog": {
+      "title": "Delete Employee",
+      "description": "Are you sure you want to delete this employee? This action cannot be undone.",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "success": "Employee deleted successfully",
+      "error": "Failed to delete employee"
+    },
+    "importDialog": {
+      "title": "Import Employees",
+      "description": "Upload a CSV file containing employee data.",
+      "downloadTemplate": "Download Template",
+      "selectFile": "Select file",
+      "uploading": "Uploading...",
+      "success": "Employees imported successfully",
+      "error": "Failed to import employees"
+    }
+  },
   "home": {
     "welcome": "Welcome to HR Management System",
+    "employees": "Employees",
     "features": {
       "title": "Key Features",
       "multilingual": "Full support for English and Myanmar languages",

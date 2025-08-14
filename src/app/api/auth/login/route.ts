@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     // Find user by employeeId
     const user = await UserModel.findOne({ employeeId }).select("+password");
 
-    console.log("user --- ", user);
+    logger.info("user --- ", user);
     if (!user || !user.password) {
       return NextResponse.json(
         { error: "Invalid credentials" },

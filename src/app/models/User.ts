@@ -4,23 +4,36 @@ import { UserRoleType } from "@/types/auth";
 
 export interface ContactInfo {
   phone?: string;
-  email?: string;
-  address?: string;
+  parentContactPhone?: string;
+  email?: string; // Email P
+  currentAddress?: string; // Current Address
+  permanentAddress?: string; // Permanent Address
   [key: string]: any;
 }
 
 export interface IUser {
   employeeId: string;
   name: string;
-  nrc: string;
-  joinDate: Date;
+  nrc: string; // NRC number
+  joinDate: Date; // Join Date
   department: string;
   position: string;
   contactInfo: ContactInfo;
   profilePhoto: string;
   role: UserRoleType;
-  workLocation: "OFFICE" | "WFH";
+  workLocation: "OFFICE" | "WFH"; // WFH/Office
   password: string;
+  joinMonth: string; // Join Month
+  materialStatus: "Single" | "Married";
+  salaryProbation: number; // Salary (Probation)
+  salary: number; // Salary (After Probation)
+  birthMonth: string; // Birth Month
+  realBirthDate: Date; // Real Birth Date
+  nrcBirthDate: Date; // NRC Birth Date
+  bankProvider: string; // Bank Account
+  bankAccountNumber: string; // Account Number
+  contractDate: Date; // Contract Date
+  contractByName: string; // Contract By	Name of person
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,12 +58,19 @@ const UserSchema: Schema = new Schema<IUser>(
     position: { type: String, required: true },
     contactInfo: {
       phone: { type: String },
+      parentContactPhone: { type: String },
       email: { type: String },
-      address: { type: String },
+      currentAddress: { type: String },
+      permanentAddress: { type: String },
       // Allow additional fields
     },
-    profilePhoto: { type: String },
-    role: { type: String, default: "Employee", required: true },
+    profilePhoto: { type: String, default: "" },
+    role: {
+      type: String,
+      enum: ["Admin", "HR", "Employee"],
+      default: "Employee",
+      required: true,
+    },
     workLocation: {
       type: String,
       enum: ["OFFICE", "WFH"],
@@ -58,6 +78,31 @@ const UserSchema: Schema = new Schema<IUser>(
       required: true,
     },
     password: { type: String, required: true, select: false },
+    joinMonth: { type: String, required: true },
+    materialStatus: {
+      type: String,
+      enum: ["Single", "Married"],
+      required: true,
+    },
+    salaryProbation: { type: Number, required: true },
+    salary: { type: Number, required: true },
+    birthMonth: { type: String, required: true },
+    realBirthDate: { type: Date, required: true },
+    nrcBirthDate: { type: Date, required: true },
+    bankProvider: { type: String, required: true },
+    bankAccountNumber: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (v: string) {
+          return /^[0-9]+$/.test(v);
+        },
+        message: (props: any) =>
+          `${props.value} is not a valid bank account number!`,
+      },
+    },
+    contractDate: { type: Date, required: true },
+    contractByName: { type: String, required: true },
   },
   { timestamps: true },
 );

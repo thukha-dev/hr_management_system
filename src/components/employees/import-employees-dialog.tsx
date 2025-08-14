@@ -99,9 +99,20 @@ export function ImportEmployeesDialog({
   const requiredColumns = [
     "employeeId",
     "name",
+    "nrc",
+    "joinDate",
     "department",
     "position",
-    "joinDate",
+    "email",
+    "phone",
+    "materialStatus",
+    "workLocation",
+    "salary",
+    "bankProvider",
+    "bankAccountNumber",
+    "contractDate",
+    "contractByName",
+    "password",
   ];
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -300,10 +311,10 @@ export function ImportEmployeesDialog({
   };
 
   const downloadSampleTemplate = () => {
-    const csvContent = `employeeId,name,department,position,joinDate,email,phone,address
-MOT-00001,John Doe,IT,Developer,2024-01-15,john.doe@example.com,+1234567890,123 Main St
-MOT-00002,Jane Smith,HR,Manager,2024-02-01,jane.smith@example.com,+1234567891,456 Oak Ave
-MOT-00003,Bob Johnson,Marketing,Designer,2024-03-10,bob.johnson@example.com,+1234567892,789 Pine Rd`;
+    const csvContent = `employeeId,name,nrc,joinDate,department,position,email,phone,parentContactPhone,currentAddress,permanentAddress,workLocation,joinMonth,materialStatus,salaryProbation,salary,birthMonth,realBirthDate,nrcBirthDate,bankProvider,bankAccountNumber,contractDate,contractByName,password
+MOT-00001,John Doe,12/ABC(N)123456,2024-01-15,IT,Developer,john.doe@example.com,+1234567890,+1234567891,123 Main St,123 Main St,OFFICE,January,Single,1000000,1200000,January,1990-01-15,1990-01-15,KBZ,12345678901234,2024-01-15,John Manager,Password@123
+MOT-00002,Jane Smith,13/DEF(N)654321,2024-02-01,HR,Manager,jane.smith@example.com,+1234567892,+1234567893,456 Oak Ave,456 Oak Ave,OFFICE,February,Married,1200000,1500000,February,1992-02-01,1992-02-01,AYA,98765432109876,2024-02-01,John Manager,Password@123
+MOT-00003,Bob Johnson,14/GHI(N)789012,2024-03-10,Marketing,Designer,bob.johnson@example.com,+1234567894,+1234567895,789 Pine Rd,789 Pine Rd,WFH,March,Single,900000,1100000,March,1991-03-10,1991-03-10,CB,56789012345678,2024-03-10,John Manager,Password@123`;
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
