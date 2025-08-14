@@ -409,19 +409,19 @@ export async function POST(
       } catch (cleanupError) {
         // Ignore cleanup errors as they don't affect the import result
         logger.warn(
-          { error: cleanupError, tempPath },
           "Failed to cleanup temporary file after import",
+          { error: cleanupError, tempPath }
         );
       }
     }
   } catch (error) {
     logger.error(
+      "Failed to import employees",
       {
-        error,
+        error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
         name: error instanceof Error ? error.name : undefined,
-      },
-      "Failed to import employees",
+      }
     );
 
     let errorMessage =
