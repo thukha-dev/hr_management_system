@@ -73,6 +73,10 @@
     },
     "employee": {
       "updated": "Employee updated successfully"
+    },
+    "deleteSuccess": "Employee deleted successfully!",
+    "errors": {
+      "deleteFailed": "Failed to delete employee"
     }
   },
   "home": {

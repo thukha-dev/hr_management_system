@@ -32,7 +32,7 @@ export enum BankProvider {
 
 export interface EmployeeTableRow {
   _id: string;
-  id: string;
+  // id: string;
   employeeId: string;
   name: string;
   email?: string;

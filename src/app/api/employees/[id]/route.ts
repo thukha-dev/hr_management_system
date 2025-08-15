@@ -150,3 +150,39 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    await connectDB();
+
+    const { id } = await context.params;
+    if (!id || !Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid employee id" },
+        { status: 400 },
+      );
+    }
+
+    const deleted = await UserModel.findByIdAndDelete(id).lean();
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, message: "Employee not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    logger.error("Failed to delete employee", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json(
+      { success: false, message: "Failed to delete employee" },
+      { status: 500 },
+    );
+  }
+}

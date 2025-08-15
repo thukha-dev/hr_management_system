@@ -17,7 +17,6 @@ import { AddEmployeeDialog } from "@/components/employees/add-employee-dialog";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
 import { ImportEmployeesDialog } from "@/components/employees/import-employees-dialog";
 import { EmployeeDetailsDialog } from "@/components/employees/employee-details-dialog";
-import { deleteEmployee } from "@/app/actions/employee-actions";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -356,7 +355,15 @@ export default function EmployeesPage() {
 
     setIsDeleting(employeeToDelete);
     try {
-      await deleteEmployee(employeeToDelete);
+      const res = await fetch(`/api/employees/${employeeToDelete}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}) as any);
+        throw new Error(
+          err?.error || err?.message || "Failed to delete employee",
+        );
+      }
       toast.success(t("deleteSuccess"));
       setEmployees((prev) =>
         prev.filter((emp) => emp._id !== employeeToDelete),
