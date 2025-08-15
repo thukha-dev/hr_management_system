@@ -2,19 +2,26 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeDataTable } from "@/components/employees/employee-data-table";
-import { Plus, MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
+import {
+  Plus,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Loader2,
+  Info,
+} from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { AddEmployeeDialog } from "@/components/employees/add-employee-dialog";
 import { EditEmployeeDialog } from "@/components/employees/edit-employee-dialog";
 import { ImportEmployeesDialog } from "@/components/employees/import-employees-dialog";
+import { EmployeeDetailsDialog } from "@/components/employees/employee-details-dialog";
 import { deleteEmployee } from "@/app/actions/employee-actions";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { toPlainObject } from "@/lib/utils";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -31,47 +38,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BankProvider, MaterialStatus, UserRole } from "@/types/interface";
-
-// Define the base Employee type based on the API response
-type Employee = {
-  _id: string;
-  id: string; // For backward compatibility
-  employeeId: string;
-  name: string;
-  email?: string; // For backward compatibility
-  contactInfo?: {
-    email?: string;
-    phone?: string;
-    parentContactPhone?: string;
-    currentAddress?: string;
-    permanentAddress?: string;
-  };
-  department: string;
-  position: string;
-  joinDate: string;
-  joinMonth: string;
-  nrc: string;
-  materialStatus: MaterialStatus;
-  salaryProbation: number;
-  salary: number;
-  birthMonth: string;
-  realBirthDate: string;
-  nrcBirthDate: string;
-  bankProvider: BankProvider;
-  bankAccountNumber: string;
-  contractDate: string;
-  contractByName: string;
-  workLocation: "OFFICE" | "WFH";
-  profilePhoto: string;
-  role: UserRole;
-  status: string; // Made required with a default value
-  createdAt?: string;
-  updatedAt?: string;
-};
+import { EmployeeResponse } from "@/types/interface";
 
 // Type for the employee table row that extends the base Employee type
-type EmployeeTableRow = Employee & {
+type EmployeeTableRow = EmployeeResponse & {
   id: string;
   email: string;
   phone: string; // Made required to match EditEmployeeDialog props
@@ -86,18 +56,18 @@ type EmployeeTableRow = Employee & {
 };
 
 // Helper function to map Employee to EmployeeTableRow
-const mapToTableRow = (employee: Employee): EmployeeTableRow => {
+const mapToTableRow = (employee: EmployeeResponse): EmployeeTableRow => {
   return {
     ...employee,
-    id: employee._id || employee.id || "",
-    email: employee.email || employee.contactInfo?.email || "",
+    id: employee._id || employee.employeeId || "",
+    email: employee.contactInfo?.email || "",
     phone: employee.contactInfo?.phone || "", // Ensure phone is always a string
     address:
       employee.contactInfo?.currentAddress ||
       employee.contactInfo?.permanentAddress ||
       "",
     contactInfo: {
-      email: employee.contactInfo?.email || employee.email || "",
+      email: employee.contactInfo?.email || "",
       phone: employee.contactInfo?.phone || "", // Ensure phone is always a string
       parentContactPhone: employee.contactInfo?.parentContactPhone || "",
       currentAddress: employee.contactInfo?.currentAddress || "",
@@ -147,6 +117,7 @@ export default function EmployeesPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] =
     useState<EmployeeTableRow | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -186,28 +157,30 @@ export default function EmployeesPage() {
             </div>
             <div>
               <div className="font-medium">{name}</div>
-              <div className="text-sm text-gray-500">{row.original.email}</div>
+              <div className="text-sm text-gray-500">
+                {row.original.position}
+              </div>
             </div>
           </div>
         );
       },
     },
-    {
-      accessorKey: "contactInfo.email",
-      header: "Email",
-      cell: ({ row }) => {
-        const email = row.original.contactInfo?.email;
-        return <div className="text-sm">{email || "-"}</div>;
-      },
-    },
-    {
-      accessorKey: "contactInfo.phone",
-      header: "Phone",
-      cell: ({ row }) => {
-        const phone = row.original.contactInfo?.phone;
-        return <div className="text-sm">{phone || "-"}</div>;
-      },
-    },
+    // {
+    //   accessorKey: "contactInfo.email",
+    //   header: "Email",
+    //   cell: ({ row }) => {
+    //     const email = row.original.contactInfo?.email;
+    //     return <div className="text-sm">{email || "-"}</div>;
+    //   },
+    // },
+    // {
+    //   accessorKey: "contactInfo.phone",
+    //   header: "Phone",
+    //   cell: ({ row }) => {
+    //     const phone = row.original.contactInfo?.phone;
+    //     return <div className="text-sm">{phone || "-"}</div>;
+    //   },
+    // },
     {
       accessorKey: "department",
       header: "Department",
@@ -254,18 +227,18 @@ export default function EmployeesPage() {
         );
       },
     },
-    {
-      accessorKey: "joinDate",
-      header: "Join Date",
-      cell: ({ row }) => {
-        const date = row.getValue("joinDate") as string;
-        return (
-          <div className="text-sm whitespace-nowrap">
-            {date ? format(new Date(date), "MMM d, yyyy") : "-"}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "joinDate",
+    //   header: "Join Date",
+    //   cell: ({ row }) => {
+    //     const date = row.getValue("joinDate") as string;
+    //     return (
+    //       <div className="text-sm whitespace-nowrap">
+    //         {date ? format(new Date(date), "MMM d, yyyy") : "-"}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       id: "actions",
       cell: ({ row }) => {
@@ -281,6 +254,13 @@ export default function EmployeesPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => handleViewDetails(employee)}
+                  disabled={isDeleting === employee._id}
+                >
+                  <Info className="mr-2 h-4 w-4" />
+                  {t("actions.viewDetails")}
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handleEdit(employee)}
                   disabled={isDeleting === employee._id}
@@ -337,7 +317,9 @@ export default function EmployeesPage() {
       }
 
       // Map the API response to the EmployeeTableRow type
-      const mappedEmployees = data.map((emp: Employee) => mapToTableRow(emp));
+      const mappedEmployees = data.map((emp: EmployeeResponse) =>
+        mapToTableRow(emp),
+      );
       setEmployees(mappedEmployees);
       return mappedEmployees;
     } catch (error: unknown) {
@@ -391,26 +373,32 @@ export default function EmployeesPage() {
 
   // Handle successful employee update
   const handleUpdateSuccess = useCallback(
-    (updatedEmployee: Employee) => {
+    (updatedEmployee: EmployeeResponse) => {
       const mappedEmployee = mapToTableRow(updatedEmployee);
       setEmployees((prevEmployees) =>
         prevEmployees.map((emp) =>
           emp._id === mappedEmployee._id ? mappedEmployee : emp,
         ),
       );
-      toast.success(t("updateSuccess"));
+      toast.success(t("employee.updated"));
       setIsEditDialogOpen(false);
       setSelectedEmployee(null);
     },
     [t],
   );
 
+  // Handle view details
+  const handleViewDetails = useCallback((employee: EmployeeTableRow) => {
+    setSelectedEmployee(employee);
+    setIsDetailsDialogOpen(true);
+  }, []);
+
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="flex flex-col space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:ml-auto">
             <AddEmployeeDialog
               isOpen={isAddDialogOpen}
               onOpenChange={setIsAddDialogOpen}
@@ -463,21 +451,22 @@ export default function EmployeesPage() {
           )}
         </div>
       </div>
-
       {/* Edit Employee Dialog */}
       {selectedEmployee && (
         <EditEmployeeDialog
           employee={selectedEmployee}
           isOpen={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
-          onSuccess={() => {
-            // Refresh the employee list after successful update
-            fetchEmployees();
-            setIsEditDialogOpen(false);
-          }}
+          onSuccess={handleUpdateSuccess}
         />
       )}
-
+      {selectedEmployee && (
+        <EmployeeDetailsDialog
+          employee={selectedEmployee}
+          isOpen={isDetailsDialogOpen}
+          onOpenChange={setIsDetailsDialogOpen}
+        />
+      )}
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         isOpen={deleteDialogOpen}

@@ -330,7 +330,7 @@ MOT-00003,Bob Johnson,14/GHI(N)789012,2024-03-10,Marketing,Designer,bob.johnson@
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="ml-2">
+        <Button variant="outline" className="w-full sm:w-auto justify-center">
           <FileSpreadsheet className="mr-2 h-4 w-4" />
           Import CSV/XLSX
         </Button>

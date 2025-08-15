@@ -1,42 +1,11 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
+import { EmployeeResponse } from "@/types/interface";
 import User from "@/app/models/User";
 import logger from "@/lib/logger";
-
-// Type for the user object we'll return
-type UserResponse = {
-  _id: string;
-  employeeId: string;
-  name: string;
-  contactInfo?: {
-    email?: string;
-    phone?: string;
-    parentContactPhone?: string;
-    currentAddress?: string;
-    permanentAddress?: string;
-  };
-  department: string;
-  position: string;
-  joinDate: string;
-  joinMonth: string;
-  nrc: string;
-  materialStatus: MaterialStatus;
-  salaryProbation: number;
-  salary: number;
-  birthMonth: string;
-  realBirthDate: string;
-  nrcBirthDate: string;
-  bankProvider: string;
-  bankAccountNumber: string;
-  contractDate: string;
-  contractByName: string;
-  workLocation: WorkLocation;
-  profilePhoto: string;
-  role: UserRole;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
+import { safeDateParse } from "@/lib/utils";
+// Add bcrypt for password hashing
+import bcrypt from "bcryptjs";
 
 const { connectDB } = db;
 
@@ -51,9 +20,9 @@ export async function GET() {
       .exec();
 
     // Convert MongoDB documents to response objects
-    const employees = users.map((user: any): UserResponse => {
+    const employees = users.map((user: any): EmployeeResponse => {
       // Create a new object with all required fields
-      const response: UserResponse = {
+      const response: EmployeeResponse = {
         _id: user._id?.toString() || "",
         employeeId: user.employeeId,
         name: user.name,
@@ -112,23 +81,11 @@ export async function GET() {
   }
 }
 
-// Helper function to safely parse dates
-const safeDateParse = (dateValue: any, fallback: Date = new Date()): string => {
-  try {
-    if (!dateValue) return fallback.toISOString();
-    const date = new Date(dateValue);
-    return isNaN(date.getTime()) ? fallback.toISOString() : date.toISOString();
-  } catch (error) {
-    logger.warn("Error parsing date:", { dateValue, error });
-    return fallback.toISOString();
-  }
-};
-
 // Add CORS headers for API routes
 export const dynamic = "force-dynamic"; // Ensure dynamic rendering
 
 type CreateEmployeeRequest = Omit<
-  UserResponse,
+  EmployeeResponse,
   "_id" | "createdAt" | "updatedAt"
 > & {
   password: string;
@@ -289,9 +246,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-// Add bcrypt for password hashing
-import bcrypt from "bcryptjs";
-import { MaterialStatus, UserRole, WorkLocation } from "@/types/interface";
-import { promises as fs } from "fs";
-import path from "path";

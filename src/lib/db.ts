@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === "development") {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       logger.error(
-        `Failed to connect to MongoDB in production: ${errorMessage}`
+        `Failed to connect to MongoDB in production: ${errorMessage}`,
       );
       throw error;
     });

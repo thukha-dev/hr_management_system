@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import logger from "./logger";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,3 +40,18 @@ export function toPlainObject<T = any>(doc: any): T {
   // Return primitives as is
   return doc as T;
 }
+
+// Helper function to safely parse dates
+export const safeDateParse = (
+  dateValue: any,
+  fallback: Date = new Date(),
+): string => {
+  try {
+    if (!dateValue) return fallback.toISOString();
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? fallback.toISOString() : date.toISOString();
+  } catch (error) {
+    logger.warn("Error parsing date:", { dateValue, error });
+    return fallback.toISOString();
+  }
+};

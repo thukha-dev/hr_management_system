@@ -39,7 +39,8 @@
     "actions": {
       "addEmployee": "Add Employee",
       "import": "Import",
-      "importEmployees": "Import Employees"
+      "importEmployees": "Import Employees",
+      "viewDetails": "View Details"
     },
     "table": {
       "headers": {

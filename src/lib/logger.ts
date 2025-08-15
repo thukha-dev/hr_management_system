@@ -1,7 +1,7 @@
 // Edge-compatible logger that works in both Node.js and Edge runtimes
 
 // Simple console logger that works in both environments
-const logger = {
+export const logger = {
   // Debug level - only shown in development
   debug: (message: string, data?: any) => {
     if (process.env.NODE_ENV !== "production") {

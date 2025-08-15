@@ -283,7 +283,7 @@ export function AddEmployeeDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="ml-auto">
+        <Button variant="outline" className="w-full sm:w-auto justify-center">
           <Plus className="mr-2 h-4 w-4" /> Add Employee
         </Button>
       </DialogTrigger>

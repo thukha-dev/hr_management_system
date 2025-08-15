@@ -40,7 +40,12 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import { toast } from "sonner";
-import { MaterialStatus, BankProvider, UserRole } from "@/types/interface";
+import {
+  MaterialStatus,
+  BankProvider,
+  UserRole,
+  EmployeeResponse,
+} from "@/types/interface";
 
 // Define form schema for validation
 const employeeFormSchema = z.object({
@@ -82,43 +87,10 @@ const employeeFormSchema = z.object({
 type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
 
 interface EditEmployeeDialogProps {
-  employee: {
-    id: string;
-    employeeId: string;
-    name: string;
-    email: string;
-    nrc: string;
-    joinDate: string;
-    joinMonth?: string;
-    materialStatus?: MaterialStatus;
-    salaryProbation?: number;
-    salary?: number;
-    birthMonth?: string;
-    realBirthDate?: string;
-    nrcBirthDate?: string;
-    bankProvider?: BankProvider;
-    bankAccountNumber?: string;
-    contractDate?: string;
-    contractByName?: string;
-    department: string;
-    position: string;
-    role: UserRole;
-    workLocation?: string;
-    phone: string;
-    address?: string;
-    status?: string;
-    profilePhoto?: string;
-    contactInfo?: {
-      email?: string;
-      phone?: string;
-      parentContactPhone?: string;
-      currentAddress?: string;
-      permanentAddress?: string;
-    };
-  };
+  employee: EmployeeResponse;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (updatedEmployee?: any) => void;
 }
 
 export function EditEmployeeDialog({
@@ -156,14 +128,13 @@ export function EditEmployeeDialog({
         ? new Date(employee.contractDate)
         : undefined,
       contactInfo: {
-        email: employee.contactInfo?.email || employee.email,
-        phone: employee.contactInfo?.phone || employee.phone,
+        email: employee.contactInfo?.email,
+        phone: employee.contactInfo?.phone,
         parentContactPhone: employee.contactInfo?.parentContactPhone || "",
-        currentAddress:
-          employee.contactInfo?.currentAddress || employee.address || "",
-        permanentAddress:
-          employee.contactInfo?.permanentAddress || employee.address || "",
+        currentAddress: employee.contactInfo?.currentAddress || "",
+        permanentAddress: employee.contactInfo?.permanentAddress || "",
       },
+      bankProvider: employee.bankProvider as BankProvider,
     },
   });
 
@@ -175,7 +146,8 @@ export function EditEmployeeDialog({
   // Update form values when employee prop changes
   useEffect(() => {
     if (employee) {
-      reset({
+      // Create a type-safe form data object
+      const formData: Partial<EmployeeFormValues> = {
         ...employee,
         joinDate: employee.joinDate ? new Date(employee.joinDate) : new Date(),
         realBirthDate: employee.realBirthDate
@@ -187,16 +159,34 @@ export function EditEmployeeDialog({
         contractDate: employee.contractDate
           ? new Date(employee.contractDate)
           : undefined,
+        bankProvider: employee.bankProvider as BankProvider | undefined,
         contactInfo: {
-          email: employee.contactInfo?.email || employee.email,
-          phone: employee.contactInfo?.phone || employee.phone,
+          email: employee.contactInfo?.email || "",
+          phone: employee.contactInfo?.phone || "",
           parentContactPhone: employee.contactInfo?.parentContactPhone || "",
-          currentAddress:
-            employee.contactInfo?.currentAddress || employee.address || "",
-          permanentAddress:
-            employee.contactInfo?.permanentAddress || employee.address || "",
+          currentAddress: employee.contactInfo?.currentAddress || "",
+          permanentAddress: employee.contactInfo?.permanentAddress || "",
         },
+      };
+
+      // Ensure required fields are present
+      const requiredFields: (keyof EmployeeFormValues)[] = [
+        "employeeId",
+        "name",
+        "email",
+        "nrc",
+        "department",
+        "position",
+        "role",
+        "phone",
+      ];
+      requiredFields.forEach((field) => {
+        if (!formData[field] && employee[field as keyof EmployeeResponse]) {
+          (formData as any)[field] = employee[field as keyof EmployeeResponse];
+        }
       });
+
+      reset(formData as EmployeeFormValues);
       setPreviewUrl(employee.profilePhoto || null);
     }
   }, [employee, reset]);
@@ -256,7 +246,7 @@ export function EditEmployeeDialog({
       // Prepare the employee data for update
       const employeeData = {
         ...data,
-        id: employee.id,
+        _id: employee._id,
         profilePhoto: profilePhotoUrl,
         joinDate: data.joinDate.toISOString(),
         realBirthDate: data.realBirthDate?.toISOString(),
@@ -268,7 +258,7 @@ export function EditEmployeeDialog({
       delete (employeeData as any).profilePhotoFile;
 
       // Send the update request
-      const response = await fetch(`/api/employees/${employee.id}`, {
+      const response = await fetch(`/api/employees/${employee._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
