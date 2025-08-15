@@ -27,11 +27,11 @@ const globalWithMongoose = global as typeof globalThis & {
   _mongoosePromise?: Promise<typeof mongoose>;
 };
 
-const mongooseUri = process.env.MONGODB_URI as string;
+// Ensure this route executes in the Node.js runtime (required for fs, XLSX, etc.)
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-if (!mongooseUri) {
-  throw new Error("MONGODB_URI is not defined in .env.local");
-}
+const mongooseUri: string = process.env.MONGODB_URI || "";
 
 async function connectMongoose() {
   if (mongoose.connection.readyState >= 1) {
@@ -40,6 +40,10 @@ async function connectMongoose() {
 
   if (globalWithMongoose._mongoosePromise) {
     return globalWithMongoose._mongoosePromise;
+  }
+
+  if (!mongooseUri) {
+    throw new Error("MONGODB_URI is not defined");
   }
 
   globalWithMongoose._mongoosePromise = mongoose.connect(mongooseUri, {
@@ -58,9 +62,22 @@ function validateEmployeeData(
   const requiredFields = [
     "employeeId",
     "name",
+    "nrc",
     "department",
     "position",
     "joinDate",
+    "workLocation",
+    "joinMonth",
+    "materialStatus",
+    "salaryProbation",
+    "salary",
+    "birthMonth",
+    "realBirthDate",
+    "nrcBirthDate",
+    "bankProvider",
+    "bankAccountNumber",
+    "contractDate",
+    "contractByName",
   ];
   const validDepartments = [
     "HR",
@@ -136,6 +153,25 @@ function validateEmployeeData(
       });
     }
 
+    // Validate NRC format
+    if (row.nrc) {
+      const raw = String(row.nrc)
+        .replace(/\u200B/g, "")
+        .replace(/\s+/g, "")
+        .toUpperCase();
+      if (!/^\d{1,2}\/[A-Z]{1,3}\([A-Z]\)\d{6}$/.test(raw)) {
+        errors.push({
+          row: rowNumber,
+          column: "nrc",
+          value: row.nrc,
+          message: "Please provide a valid NRC format (e.g., 12/ABC(N)123456)",
+        });
+      } else {
+        // write back normalized value for downstream use
+        row.nrc = raw;
+      }
+    }
+
     // Validate join date
     if (row.joinDate) {
       const joinDate = new Date(row.joinDate);
@@ -147,6 +183,67 @@ function validateEmployeeData(
           message: "Invalid date format. Use YYYY-MM-DD",
         });
       }
+    }
+
+    // Validate other dates
+    [
+      { key: "realBirthDate", label: "realBirthDate" },
+      { key: "nrcBirthDate", label: "nrcBirthDate" },
+      { key: "contractDate", label: "contractDate" },
+    ].forEach(({ key, label }) => {
+      if (row[key]) {
+        const d = new Date(row[key]);
+        if (isNaN(d.getTime())) {
+          errors.push({
+            row: rowNumber,
+            column: label,
+            value: row[key],
+            message: "Invalid date format. Use YYYY-MM-DD",
+          });
+        }
+      }
+    });
+
+    // Validate numbers
+    [
+      { key: "salaryProbation", label: "salaryProbation" },
+      { key: "salary", label: "salary" },
+    ].forEach(({ key, label }) => {
+      if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
+        const n = Number(row[key]);
+        if (!Number.isFinite(n)) {
+          errors.push({
+            row: rowNumber,
+            column: label,
+            value: row[key],
+            message: `${label} must be a number`,
+          });
+        }
+      }
+    });
+
+    // Validate enums
+    const validMaterialStatus = ["Single", "Married"];
+    if (
+      row.materialStatus &&
+      !validMaterialStatus.includes(row.materialStatus)
+    ) {
+      errors.push({
+        row: rowNumber,
+        column: "materialStatus",
+        value: row.materialStatus,
+        message: `materialStatus must be one of: ${validMaterialStatus.join(", ")}`,
+      });
+    }
+
+    const validWorkLocations = ["OFFICE", "WFH"];
+    if (row.workLocation && !validWorkLocations.includes(row.workLocation)) {
+      errors.push({
+        row: rowNumber,
+        column: "workLocation",
+        value: row.workLocation,
+        message: `workLocation must be one of: ${validWorkLocations.join(", ")}`,
+      });
     }
   });
 
@@ -370,28 +467,75 @@ export async function POST(
         );
       }
 
-      // Import valid data
-      const importPromises = data.map(async (row) => {
-        const hashedPassword = await bcrypt.hash("password123", 12); // Default password
+      // Import valid data with per-row error capturing
+      const rowImportErrors: ValidationError[] = [];
+      const importedEmployees: any[] = [];
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        try {
+          const hashedPassword = await bcrypt.hash("password123", 12); // Default password
+          const created = await UserModel.create({
+            employeeId: row.employeeId,
+            name: row.name,
+            nrc: String(row.nrc)
+              .replace(/\u200B/g, "")
+              .replace(/\s+/g, "")
+              .toUpperCase(),
+            joinDate: new Date(row.joinDate),
+            department: row.department,
+            position: row.position,
+            contactInfo: {
+              email: row.email || "",
+              phone: row.phone || "",
+              parentContactPhone: row.parentContactPhone || "",
+              currentAddress: row.currentAddress || "",
+              permanentAddress: row.permanentAddress || "",
+            },
+            profilePhoto: row.profilePhoto || "",
+            role: "Employee", // comply with enum ["Admin","HR","Employee"]
+            workLocation: row.workLocation === "WFH" ? "WFH" : "OFFICE",
+            password: hashedPassword,
+            joinMonth: row.joinMonth,
+            materialStatus: row.materialStatus,
+            salaryProbation: row.salaryProbation
+              ? Number(row.salaryProbation)
+              : undefined,
+            salary: row.salary ? Number(row.salary) : undefined,
+            birthMonth: row.birthMonth,
+            realBirthDate: row.realBirthDate
+              ? new Date(row.realBirthDate)
+              : undefined,
+            nrcBirthDate: row.nrcBirthDate
+              ? new Date(row.nrcBirthDate)
+              : undefined,
+            bankProvider: row.bankProvider,
+            bankAccountNumber: row.bankAccountNumber,
+            contractDate: row.contractDate
+              ? new Date(row.contractDate)
+              : undefined,
+            contractByName: row.contractByName,
+          });
+          importedEmployees.push(created);
+        } catch (e) {
+          rowImportErrors.push({
+            row: i + 2,
+            column: "*",
+            value: "",
+            message: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
 
-        return UserModel.create({
-          employeeId: row.employeeId,
-          name: row.name,
-          joinDate: new Date(row.joinDate),
-          department: row.department,
-          position: row.position,
-          contactInfo: {
-            email: row.email || "",
-            phone: row.phone || "",
-            address: row.address || "",
+      if (rowImportErrors.length > 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Validation failed with ${rowImportErrors.length} error(s). Please fix and try again.`,
+            errors: rowImportErrors,
           },
-          profilePhoto: row.profilePhoto || "",
-          role: "employee",
-          password: hashedPassword,
-        });
-      });
-
-      const importedEmployees = await Promise.all(importPromises);
+          { status: 400 },
+        );
+      }
 
       logger.info(
         `Successfully imported ${importedEmployees.length} employees`,
@@ -421,16 +565,42 @@ export async function POST(
       name: error instanceof Error ? error.name : undefined,
     });
 
+    // Return clearer 400 for validation errors
+    if (
+      error &&
+      typeof error === "object" &&
+      (error as any).name === "ValidationError"
+    ) {
+      const valErr = error as any;
+      const details: ValidationError[] = [];
+      if (valErr.errors) {
+        for (const key of Object.keys(valErr.errors)) {
+          const err = valErr.errors[key];
+          details.push({
+            row: 0,
+            column: key,
+            value: "",
+            message: err?.message || String(err),
+          });
+        }
+      }
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Data validation failed. Please check your file and try again.",
+          errors: details,
+        },
+        { status: 400 },
+      );
+    }
+
     let errorMessage =
       "An error occurred while importing employees. Please try again.";
-
     if (error instanceof Error) {
       if (error.message.includes("duplicate key")) {
         errorMessage =
           "Duplicate employee IDs found. Please check your data and try again.";
-      } else if (error.message.includes("validation failed")) {
-        errorMessage =
-          "Data validation failed. Please check your file format and try again.";
       } else if (error.message.includes("connection")) {
         errorMessage = "Database connection error. Please try again later.";
       }

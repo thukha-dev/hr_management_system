@@ -141,7 +141,7 @@ export default function EmployeesPage() {
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
         const avatar =
-          row.original.profilePhoto || "/avatars/default-avatar.png";
+          row.original.profilePhoto || "/avatars/default-avatar.svg";
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
@@ -151,7 +151,7 @@ export default function EmployeesPage() {
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
-                    "/avatars/default-avatar.png";
+                    "/images/default-avatar.png";
                 }}
               />
             </div>

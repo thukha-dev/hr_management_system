@@ -271,8 +271,15 @@ export function EditEmployeeDialog({
         throw new Error(errorData.message || "Failed to update employee");
       }
 
+      const result = (await response.json()) as {
+        success: boolean;
+        data?: any;
+        message?: string;
+      };
+
       toast.success("Employee updated successfully!");
-      onSuccess?.();
+      // Pass updated employee back to parent so it has `_id` and latest values
+      onSuccess?.(result?.data);
 
       // Close the dialog after a short delay
       setTimeout(() => {

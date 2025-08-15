@@ -2,6 +2,11 @@
   "header": {
     "title": "လူထုစီမံခန့်ခွဲမှုစနစ်"
   },
+  "Employees": {
+    "employee": {
+      "updated": "ဝန်ထမ်းအချက်အလက် ပြင်ဆင်ပြီးပါပြီ"
+    }
+  },
   "language": {
     "en": "English",
     "my": "မြန်မာ",

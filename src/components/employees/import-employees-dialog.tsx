@@ -286,22 +286,34 @@ export function ImportEmployeesDialog({
       const response = await fetch("/api/employees/import", {
         method: "POST",
         body: formData,
+        cache: "no-store",
       });
 
-      const result: ImportResult = await response.json();
+      // Try to parse JSON; fall back to text if necessary
+      const tryParseJson = async () => {
+        try {
+          return await response.json();
+        } catch {
+          const text = await response.text();
+          return { success: false, message: text } as ImportResult;
+        }
+      };
 
-      if (result.success) {
-        setImportResult(result);
-        toast.success(
-          t("employees.import.importSuccess", {
-            count: result.importedCount || 0,
-          }),
-        );
-        onSuccess?.();
-      } else {
+      const result = (await tryParseJson()) as ImportResult;
+
+      if (!response.ok || !result.success) {
         setValidationErrors(result.errors || []);
         toast.error(result.message || t("employees.import.importFailed"));
+        return;
       }
+
+      setImportResult(result);
+      toast.success(
+        t("employees.import.importSuccess", {
+          count: result.importedCount || 0,
+        }),
+      );
+      onSuccess?.();
     } catch (error) {
       console.error("Import error:", error);
       toast.error(t("employees.import.importFailed"));

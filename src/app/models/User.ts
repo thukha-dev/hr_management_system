@@ -49,7 +49,7 @@ const UserSchema: Schema = new Schema<IUser>(
       required: true,
       unique: true,
       match: [
-        /^[0-9]\/[A-Za-z]+?\([A-Za-z]\)[0-9]{6}$/,
+        /^\d{1,2}\/[A-Za-z]{1,3}\([A-Za-z]\)\d{6}$/,
         "Please provide a valid NRC format (e.g., 12/ABC(N)123456)",
       ],
     },

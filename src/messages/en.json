@@ -70,6 +70,9 @@
       "uploading": "Uploading...",
       "success": "Employees imported successfully",
       "error": "Failed to import employees"
+    },
+    "employee": {
+      "updated": "Employee updated successfully"
     }
   },
   "home": {
