@@ -45,7 +45,7 @@ const formatBankProvider = (provider?: BankProvider) => {
   if (!provider) return "Not specified";
   return provider
     .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.toUpperCase())
     .join(" ");
 };
 
@@ -72,7 +72,7 @@ export function EmployeeDetailsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[80vh] overflow-y-auto p-0">
+      <DialogContent className="sm:max-w-xl max-h-[80vh] overflow-y-auto p-0">
         <div className="sticky top-0 bg-background z-10 flex items-center justify-between border-b p-3 sm:p-4">
           <div className="flex items-center space-x-2">
             <User className="h-4 w-4 text-primary" />
@@ -100,7 +100,9 @@ export function EmployeeDetailsDialog({
                   <div className="absolute inset-0 bg-primary/5 rounded-full scale-90 group-hover:scale-95 transition-transform duration-200" />
                   <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-4 border-background relative">
                     <AvatarImage
-                      src={employee.avatar || ""}
+                      src={
+                        employee.profilePhoto || "/avatars/default-avatar.svg"
+                      }
                       alt={employee.name}
                       className="object-cover"
                     />
@@ -128,8 +130,8 @@ export function EmployeeDetailsDialog({
           {/* Grid Layout for Other Sections */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Contact Information */}
-            <Card className="border shadow-sm">
-              <CardHeader className="p-2.5 sm:p-3 pb-1">
+            <Card className="border shadow-sm gap-0">
+              <CardHeader className="p-1 sm:p-1 pb-0">
                 <CardTitle className="text-xs sm:text-sm font-medium flex items-center text-muted-foreground">
                   <Mail className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span>Contact Information</span>
@@ -142,7 +144,7 @@ export function EmployeeDetailsDialog({
                       Email
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.email}
+                      {employee.contactInfo?.email || employee.email || "-"}
                     </p>
                   </div>
                   <div className="space-y-1">
@@ -150,15 +152,31 @@ export function EmployeeDetailsDialog({
                       Phone
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.phone || "-"}
+                      {employee.contactInfo?.phone || employee.phone || "-"}
                     </p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Address
+                      Parent Contact
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.address || "-"}
+                      {employee.contactInfo?.parentContactPhone || "-"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      Current Address
+                    </p>
+                    <p className="text-xs sm:text-sm text-foreground">
+                      {employee.contactInfo?.currentAddress || "-"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      Permanent Address
+                    </p>
+                    <p className="text-xs sm:text-sm text-foreground">
+                      {employee.contactInfo?.permanentAddress || "-"}
                     </p>
                   </div>
                 </div>
@@ -166,8 +184,8 @@ export function EmployeeDetailsDialog({
             </Card>
 
             {/* Job Information */}
-            <Card className="border shadow-sm">
-              <CardHeader className="p-2.5 sm:p-3 pb-1">
+            <Card className="border shadow-sm gap-0">
+              <CardHeader className="p-1 sm:p-1 pb-0">
                 <CardTitle className="text-xs sm:text-sm font-medium flex items-center text-muted-foreground">
                   <Briefcase className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span>Job Information</span>
@@ -193,11 +211,11 @@ export function EmployeeDetailsDialog({
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Hire Date
+                      Join Date
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.hireDate
-                        ? format(new Date(employee.hireDate), "PP")
+                      {employee.joinDate
+                        ? format(new Date(employee.joinDate), "PP")
                         : "-"}
                     </p>
                   </div>
@@ -206,8 +224,8 @@ export function EmployeeDetailsDialog({
             </Card>
 
             {/* Contract Details */}
-            <Card className="border shadow-sm">
-              <CardHeader className="p-2.5 sm:p-3 pb-1">
+            <Card className="border shadow-sm gap-0">
+              <CardHeader className="p-1 sm:p-1 pb-0">
                 <CardTitle className="text-xs sm:text-sm font-medium flex items-center text-muted-foreground">
                   <FileText className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span>Contract Details</span>
@@ -217,30 +235,20 @@ export function EmployeeDetailsDialog({
                 <div className="space-y-2">
                   <div className="space-y-1">
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Contract Type
+                      Contract Date
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.contractType || "-"}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Contract Start
-                    </p>
-                    <p className="text-xs sm:text-sm text-foreground">
-                      {employee.contractStart
-                        ? format(new Date(employee.contractStart), "PP")
+                      {employee.contractDate
+                        ? format(new Date(employee.contractDate), "PP")
                         : "-"}
                     </p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Contract End
+                      Contract By
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.contractEnd
-                        ? format(new Date(employee.contractEnd), "PP")
-                        : "-"}
+                      {employee.contractByName || "-"}
                     </p>
                   </div>
                 </div>
@@ -248,8 +256,8 @@ export function EmployeeDetailsDialog({
             </Card>
 
             {/* Bank Information */}
-            <Card className="border shadow-sm">
-              <CardHeader className="p-2.5 sm:p-3 pb-1">
+            <Card className="border shadow-sm gap-0">
+              <CardHeader className="p-1 sm:p-1 pb-0">
                 <CardTitle className="text-xs sm:text-sm font-medium flex items-center text-muted-foreground">
                   <CreditCard className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span>Bank Information</span>
@@ -259,11 +267,11 @@ export function EmployeeDetailsDialog({
                 <div className="space-y-2">
                   <div className="space-y-1">
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Bank Name
+                      Bank Provider
                     </p>
                     <p className="text-xs sm:text-sm text-foreground">
-                      {employee.bankName
-                        ? formatBankProvider(employee.bankName)
+                      {employee.bankProvider
+                        ? formatBankProvider(employee.bankProvider)
                         : "-"}
                     </p>
                   </div>
@@ -275,14 +283,7 @@ export function EmployeeDetailsDialog({
                       {employee.bankAccountNumber || "-"}
                     </p>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">
-                      Account Name
-                    </p>
-                    <p className="text-xs sm:text-sm text-foreground">
-                      {employee.bankAccountName || "-"}
-                    </p>
-                  </div>
+                  {/* Account name is optional/unsupporte d in schema; omit if not present */}
                 </div>
               </CardContent>
             </Card>
@@ -290,8 +291,8 @@ export function EmployeeDetailsDialog({
 
           {/* Salary Information */}
           {employee.salary && (
-            <Card className="border shadow-sm">
-              <CardHeader className="p-2.5 sm:p-3 pb-1">
+            <Card className="border shadow-sm gap-0">
+              <CardHeader className="p-1 sm:p-1 pb-0">
                 <CardTitle className="text-xs sm:text-sm font-medium flex items-center text-muted-foreground">
                   <DollarSign className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span>Salary Information</span>
@@ -305,9 +306,9 @@ export function EmployeeDetailsDialog({
                       <span>Basic Salary</span>
                     </p>
                     <p className="text-xs sm:text-sm text-foreground mt-1">
-                      {new Intl.NumberFormat("en-US", {
+                      {new Intl.NumberFormat("my-MM", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "MMK",
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       }).format(employee.salary)}
@@ -320,9 +321,9 @@ export function EmployeeDetailsDialog({
                         <span>Probation Salary</span>
                       </p>
                       <p className="text-xs sm:text-sm text-foreground mt-1">
-                        {new Intl.NumberFormat("en-US", {
+                        {new Intl.NumberFormat("my-MM", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "MMK",
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         }).format(employee.salaryProbation)}

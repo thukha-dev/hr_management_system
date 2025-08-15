@@ -52,7 +52,13 @@ const employeeFormSchema = z.object({
   employeeId: z.string().min(1, "Employee ID is required"),
   name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
-  nrc: z.string().min(1, "NRC is required"),
+  nrc: z
+    .string()
+    .min(1, "NRC is required")
+    .regex(
+      /^[0-9]{1,2}\/[A-Za-z]{1,3}\([A-Za-z]\)[0-9]{6}$/,
+      "Invalid NRC format (e.g., 12/ABC(N)123456)",
+    ),
   joinDate: z.date(),
   joinMonth: z.string().optional(),
   materialStatus: z.enum(MaterialStatus).optional(),

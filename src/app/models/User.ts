@@ -67,7 +67,15 @@ const UserSchema: Schema = new Schema<IUser>(
     profilePhoto: { type: String, default: "" },
     role: {
       type: String,
-      enum: ["Admin", "HR", "Employee"],
+      enum: [
+        "Employee",
+        "Account",
+        "Admin",
+        "Department Head",
+        "Senior Admin",
+        "Super Admin",
+        "HR",
+      ],
       default: "Employee",
       required: true,
     },

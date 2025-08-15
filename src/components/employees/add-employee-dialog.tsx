@@ -416,7 +416,7 @@ export function AddEmployeeDialog({
                   {...register("nrc", {
                     required: "NRC is required",
                     pattern: {
-                      value: /^[0-9]{1,2}\/[A-Za-z]+\([A-Za-z]\)[0-9]{6}$/,
+                      value: /^[0-9]{1,2}\/[A-Za-z]{1,3}\([A-Za-z]\)[0-9]{6}$/,
                       message: "Invalid NRC format",
                     },
                   })}

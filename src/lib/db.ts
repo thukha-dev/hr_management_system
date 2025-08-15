@@ -32,14 +32,13 @@ const client = new MongoClient(uri, options);
 // Create a connection promise for MongoDB native driver
 let clientPromise: Promise<MongoClient>;
 
-// Mongoose connection options
+// Mongoose connection options (Mongoose v6+/MongoDB driver v4+)
+// Deprecated options like `useNewUrlParser` and `useUnifiedTopology` are no longer needed
 const mongooseOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
   connectTimeoutMS: 10000,
-};
+} as const;
 
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable to preserve the connection across module reloads.
