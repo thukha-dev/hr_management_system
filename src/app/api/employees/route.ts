@@ -6,6 +6,7 @@ import logger from "@/lib/logger";
 import { safeDateParse } from "@/lib/utils";
 // Add bcrypt for password hashing
 import bcrypt from "bcryptjs";
+import { DEFAULT_AVATAR } from "@/config/constants";
 
 const { connectDB } = db;
 
@@ -146,11 +147,11 @@ export async function POST(request: Request) {
           fileType: file?.type,
         });
         // Set a default avatar URL if upload fails
-        profilePhotoUrl = "/images/default-avatar.png";
+        profilePhotoUrl = DEFAULT_AVATAR;
       }
     } else {
       // Set default avatar if no file is provided
-      profilePhotoUrl = "/images/default-avatar.png";
+      profilePhotoUrl = DEFAULT_AVATAR;
     }
 
     // Basic validation

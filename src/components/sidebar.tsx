@@ -13,11 +13,14 @@ import {
   Loader2,
   Calendar,
   FileText,
+  Clock,
+  BadgeCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DEFAULT_AVATAR, CLOUDINARY_UPLOAD_FOLDER } from "@/config/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,13 +49,14 @@ interface SidebarProps {
   isOpen: boolean;
   isCollapsed?: boolean;
   onClose: () => void;
-  activePath: string;
+  activePath?: string;
 }
 
 export function Sidebar({
   isOpen,
   isCollapsed = false,
   onClose,
+  activePath,
 }: SidebarProps) {
   const { user } = useCurrentUser();
   const [isMobile, setIsMobile] = useState(false);
@@ -141,6 +145,16 @@ export function Sidebar({
       icon: <Home className="h-5 w-5" />,
     },
     {
+      name: "Check In/Out",
+      href: "/check-in-out",
+      icon: <Clock className="h-5 w-5" />,
+    },
+    {
+      name: "Attendances",
+      href: "/attendances",
+      icon: <BadgeCheck className="h-5 w-5" />,
+    },
+    {
       name: "Employees",
       href: "/employees",
       icon: <Users className="h-5 w-5" />,
@@ -157,6 +171,46 @@ export function Sidebar({
       icon: <Settings className="h-5 w-5" />,
     },
   ];
+
+  // Compute avatar source with robust fallbacks
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const toCloudinaryUrl = (val?: string | null) => {
+    if (!val) return null;
+    const trimmed = val.trim();
+    if (!trimmed) return null;
+    // If already a full URL, use as-is
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    // Support data and blob URLs
+    if (/^(data:|blob:)/i.test(trimmed)) return trimmed;
+    // If protocol-relative or missing protocol but contains Cloudinary domain
+    if (/^\/\//.test(trimmed)) return `https:${trimmed}`;
+    if (trimmed.includes("res.cloudinary.com"))
+      return `https://${trimmed.replace(/^\/+/, "")}`;
+    // Otherwise, treat as public_id
+    if (cloudName) {
+      const publicId = trimmed.includes("/")
+        ? trimmed
+        : `${CLOUDINARY_UPLOAD_FOLDER}/${trimmed}`;
+      return `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+    }
+    return null;
+  };
+
+  // Prefer API-provided profilePhoto, fallback to image
+  const resolvedImage = toCloudinaryUrl(
+    user?.profilePhoto || user?.image || null,
+  );
+  const avatarSrc =
+    resolvedImage ||
+    (user?.employeeId
+      ? `/avatars/${user.employeeId.toLowerCase()}.png`
+      : DEFAULT_AVATAR);
+  if (!resolvedImage && user?.image) {
+    console.warn("Avatar image unresolved; falling back.", {
+      userImage: user.image,
+      cloudName,
+    });
+  }
 
   // Sidebar content as a function for reuse
   const sidebarContent = (
@@ -179,7 +233,8 @@ export function Sidebar({
       <div className="flex-1 flex flex-col overflow-y-auto">
         <nav className="flex-1 px-2 py-4 space-y-1">
           {navigation.map((item) => {
-            const isActive = pathname?.startsWith(item.href);
+            const currentPath = activePath ?? pathname;
+            const isActive = currentPath?.startsWith(item.href);
             return (
               <Link
                 key={item.name}
@@ -188,8 +243,8 @@ export function Sidebar({
                   "group flex items-center text-sm font-medium rounded-md transition-colors",
                   "px-3 py-2",
                   isActive
-                    ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700",
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-primary/10 hover:text-primary",
                   isCollapsed && "justify-center px-0",
                 )}
                 title={isCollapsed ? item.name : undefined}
@@ -217,13 +272,16 @@ export function Sidebar({
               <div className="flex items-center">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={
-                      "/avatars/" +
-                      (user?.employeeId
-                        ? user.employeeId.toLowerCase() + ".png"
-                        : "01.png")
-                    }
+                    src={avatarSrc}
                     alt={user?.name || "User"}
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      const absoluteDefault =
+                        window.location.origin + DEFAULT_AVATAR;
+                      if (img.src !== absoluteDefault) {
+                        img.src = DEFAULT_AVATAR;
+                      }
+                    }}
                   />
                   <AvatarFallback>
                     {(user?.name || "U").charAt(0).toUpperCase()}

@@ -92,3 +92,17 @@ export interface EmployeeResponse {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type CheckInOutStatus =
+  | "checked-in"
+  | "checked-out"
+  | "loading"
+  | "error";
+
+export interface CheckInOutRecord {
+  id: string;
+  checkIn: Date;
+  checkOut?: Date;
+  location: string;
+  duration?: string;
+}

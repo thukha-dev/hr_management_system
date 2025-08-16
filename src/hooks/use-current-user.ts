@@ -8,6 +8,8 @@ interface User {
   role: string;
   email?: string;
   employeeId: string;
+  image?: string;
+  profilePhoto?: string;
   // Add other user properties as needed
 }
 
