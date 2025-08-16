@@ -2,6 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EmployeeDataTable } from "@/components/employees/employee-data-table";
+import { DEFAULT_AVATAR } from "@/config/constants";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Plus,
   MoreHorizontal,
@@ -139,20 +141,16 @@ export default function EmployeesPage() {
       header: "Name",
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
-        const avatar =
-          row.original.profilePhoto || "/avatars/default-avatar.svg";
+        const avatar = row.original.profilePhoto || DEFAULT_AVATAR;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
-              <img
-                src={avatar}
-                alt={name}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "/images/default-avatar.png";
-                }}
-              />
+            <div className="flex-shrink-0">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={avatar} alt={name} />
+                <AvatarFallback>
+                  {name ? name.charAt(0).toUpperCase() : "U"}
+                </AvatarFallback>
+              </Avatar>
             </div>
             <div>
               <div className="font-medium">{name}</div>
