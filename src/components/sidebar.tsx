@@ -150,8 +150,8 @@ export function Sidebar({
       icon: <Clock className="h-5 w-5" />,
     },
     {
-      name: "Attendance",
-      href: "/attendance",
+      name: "Attendances",
+      href: "/attendances",
       icon: <BadgeCheck className="h-5 w-5" />,
     },
     {
