@@ -2,6 +2,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
+// Skip this script entirely on Vercel (read-only filesystem at /vercel/path0)
+if (process.env.VERCEL) {
+  console.log("Skipping test-logger on Vercel environment.");
+  process.exit(0);
+}
+
 // Get the current module's directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
