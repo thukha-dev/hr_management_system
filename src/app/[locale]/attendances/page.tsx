@@ -134,20 +134,23 @@ export default function AttendancesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Attendances</h1>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-3 overflow-x-auto whitespace-nowrap flex-nowrap">
+        <h1 className="text-sm xs:text-base sm:text-xl font-semibold shrink-0">
+          Attendances
+        </h1>
+        <div className="ml-auto flex items-center gap-1 sm:gap-2 min-w-0">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[220px] justify-start text-left font-normal",
+                  "w-auto max-w-[60vw] sm:w-[220px] sm:max-w-none justify-start text-left font-normal whitespace-nowrap",
                   !selectedDate && "text-muted-foreground",
                 )}
+                size="sm"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateLabel}
+                <span className="truncate">{dateLabel}</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -171,7 +174,23 @@ export default function AttendancesPage() {
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
           </Button>
-          <Button variant="outline" size="sm" onClick={handleResetToToday}>
+          {/* Today button: icon-only on small screens, text on >= sm */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleResetToToday}
+            className="sm:hidden"
+            aria-label="Today"
+            title="Today"
+          >
+            <CalendarIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetToToday}
+            className="hidden sm:inline-flex whitespace-nowrap"
+          >
             Today
           </Button>
         </div>
@@ -179,86 +198,100 @@ export default function AttendancesPage() {
 
       <Card className="p-2">
         {error ? <div className="p-4 text-sm text-red-600">{error}</div> : null}
-        <div className="relative">
+        <div className="relative -mx-2 md:mx-0">
           {loading && (
             <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10">
               <span className="text-sm text-muted-foreground">Loading...</span>
             </div>
           )}
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Employee ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Position</TableHead>
-                <TableHead>Check-in</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Check-out</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead className="w-[200px]">Location</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.length === 0 ? (
+          <div className="overflow-x-auto px-2 md:px-0">
+            <Table className="w-full min-w-[900px] md:min-w-0">
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={9}
-                    className="text-center text-muted-foreground"
-                  >
-                    No records
-                  </TableCell>
+                  <TableHead>Employee ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    Department
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Position
+                  </TableHead>
+                  <TableHead>Check-in</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Check-out</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Duration
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell w-[200px]">
+                    Location
+                  </TableHead>
                 </TableRow>
-              ) : (
-                rows.map((r) => {
-                  const user = (
-                    typeof r.userId === "object" ? r.userId : undefined
-                  ) as AttendanceUser | undefined;
-                  return (
-                    <TableRow key={r._id}>
-                      <TableCell>{user?.employeeId ?? "-"}</TableCell>
-                      <TableCell>{user?.name ?? "-"}</TableCell>
-                      <TableCell>{user?.department ?? "-"}</TableCell>
-                      <TableCell>{user?.position ?? "-"}</TableCell>
-                      <TableCell>
-                        {format(new Date(r.checkIn), "dd MMM yyyy, HH:mm")}
-                      </TableCell>
-                      <TableCell>
-                        {(() => {
-                          const late = getLateness(r.checkIn);
-                          return (
-                            <span
-                              className={cn(
-                                "inline-flex items-center rounded px-2 py-0.5 text-xs font-medium",
-                                late.isLate ? "bg-red-50" : "bg-green-50",
-                                late.className,
-                              )}
-                            >
-                              {late.text}
-                            </span>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell>
-                        {r.checkOut
-                          ? format(new Date(r.checkOut), "dd MMM yyyy, HH:mm")
-                          : "-"}
-                      </TableCell>
-                      <TableCell>
-                        {r.duration ?? (r.checkOut ? "-" : "In progress")}
-                      </TableCell>
-                      <TableCell
-                        className="w-[200px] truncate"
-                        title={r.location || undefined}
-                      >
-                        {r.location ?? "-"}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={9}
+                      className="text-center text-muted-foreground"
+                    >
+                      No records
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  rows.map((r) => {
+                    const user = (
+                      typeof r.userId === "object" ? r.userId : undefined
+                    ) as AttendanceUser | undefined;
+                    return (
+                      <TableRow key={r._id}>
+                        <TableCell>{user?.employeeId ?? "-"}</TableCell>
+                        <TableCell>{user?.name ?? "-"}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          {user?.department ?? "-"}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {user?.position ?? "-"}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(r.checkIn), "dd MMM yyyy, HH:mm")}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const late = getLateness(r.checkIn);
+                            return (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded px-2 py-0.5 text-xs font-medium",
+                                  late.isLate ? "bg-red-50" : "bg-green-50",
+                                  late.className,
+                                )}
+                              >
+                                {late.text}
+                              </span>
+                            );
+                          })()}
+                        </TableCell>
+                        <TableCell>
+                          {r.checkOut
+                            ? format(new Date(r.checkOut), "dd MMM yyyy, HH:mm")
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {r.duration ?? (r.checkOut ? "-" : "In progress")}
+                        </TableCell>
+                        <TableCell
+                          className="hidden lg:table-cell w-[200px] truncate"
+                          title={r.location || undefined}
+                        >
+                          {r.location ?? "-"}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </Card>
     </div>
